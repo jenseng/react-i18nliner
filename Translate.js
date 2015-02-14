@@ -13,12 +13,50 @@ Pre-process it into:
 
 var React = require('react');
 var cloneWithProps = require('react/lib/cloneWithProps');
+var invariant = require('react/lib/invariant');
+var { string } = React.PropTypes;
 
 OWN_PROPS = ['defaultValue', 'translateKey', 'children'];
 
 var Translate = React.createClass({
+  propTypes: {
+    translateKey: string,
+    defaultValue: string
+  },
+
   componentWillMount() {
-    // ensure defaultValue and N children w/ no text children at any levels
+    var textCount = this.textCount();
+    var componentCount = this.componentCount();
+    invariant(
+      textCount <= 1,
+      '<Translate> can only have a one text child when not using pre-processing'
+    );
+    invariant(
+      componentCount === 0 || textCount === 0,
+      '<Translate> cannot have both text and component children when not using pre-processing'
+    );
+    invariant(
+      textCount > 0 || this.props.defaultValue || this.props.translateKey,
+      '<Translate> needs at least a translateKey, defaultValue, or text child'
+    );
+  },
+
+  textCount(node) {
+    node = node || this;
+    count = 0;
+    React.Children.forEach(node.props.children, function(child) {
+      count += typeof child === 'string' ? 1 : this.textCount(child);
+    });
+    return count;
+  },
+
+  componentCount() {
+    node = node || this;
+    count = 0;
+    React.Children.forEach(node.props.children, function(child) {
+      count += typeof child === 'string' ? 0 : 1 + this.componentCount(child);
+    });
+    return count;
   },
 
   inferChildren(string, children) {
@@ -56,9 +94,14 @@ var Translate = React.createClass({
   },
 
   render() {
-    var string = I18n.t(this.props.translateKey, this.props);
+    var options = this.extraProps();
+    var translateKey = this.props.translateKey;
+    var defaultValue = this.props.defaultValue || this.props.children;
+    options.defaultValue = defaultValue;
+
+    var string = I18n.t(translateKey, options);
     var children = this.inferChildren(string, this.props.children);
-    return React.createElement('span', this.extraProps(), children);
+    return React.createElement('span', {}, children);
   }
 });
 
