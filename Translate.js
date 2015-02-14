@@ -58,7 +58,7 @@ var Translate = React.createClass({
   render() {
     var string = I18n.t(this.props.translateKey, this.props);
     var children = this.inferChildren(string, this.props.children);
-    return <span {...this.extraProps()}>{ children }</span>;
+    return React.createElement('span', this.extraProps(), children);
   }
 });
 
