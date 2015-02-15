@@ -35,7 +35,7 @@ var ComponentInterpolator = React.createClass({
   textCount(node) {
     node = node || this;
     count = 0;
-    React.Children.forEach(node.props.children, function(child) {
+    React.Children.forEach(node.props.children, (child) => {
       count += typeof child === 'string' ? 1 : this.textCount(child);
     });
     return count;
@@ -44,7 +44,7 @@ var ComponentInterpolator = React.createClass({
   componentCount(node) {
     node = node || this;
     count = 0;
-    React.Children.forEach(node.props.children, function(child) {
+    React.Children.forEach(node.props.children, (child) => {
       count += typeof child === 'string' ? 0 : 1 + this.componentCount(child);
     });
     return count;
@@ -56,6 +56,7 @@ var ComponentInterpolator = React.createClass({
   },
 
   interpolateChildren(tokens, children, eof) {
+    children = children instanceof Array ? children.slice() : children ? [children] : [];
     var token, child, newChildren = [];
     while (tokens.length) {
       token = tokens.shift();
@@ -63,8 +64,8 @@ var ComponentInterpolator = React.createClass({
       if (token.match(/\*/)) {
         child = children.shift();
         child = cloneWithProps(child, {
-          key: child.key,
-          children: this.interpolateChildren(tokens, child.children, token)
+          key: child.props.key,
+          children: this.interpolateChildren(tokens, child.props.children, token)
         });
       }
       else {
@@ -91,7 +92,7 @@ var ComponentInterpolator = React.createClass({
     options.defaultValue = defaultValue;
 
     var children = this.inferChildren(this.props.string, this.props.children);
-    return React.createElement('span', {}, children);
+    return React.createElement('span', { children });
   }
 });
 
