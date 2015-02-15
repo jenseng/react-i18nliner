@@ -4,11 +4,25 @@
   "description": "i18n made simple",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/jsxhint . && node_modules/.bin/jest"
   },
   "author": "Jon Jensen",
   "license": "ISC",
   "devDependencies": {
-    "react": "^0.12.2"
+    "jest-cli": "^0.2.2",
+    "jsxhint": "^0.10.0",
+    "react": "0.12.x",
+    "react-tools": "^0.12.2"
+  },
+  "peerDependencies": {
+    "react": "0.12.x"
+  },
+  "jest": {
+    "scriptPreprocessor": "test_utils/preprocessor.js",
+    "setupTestFrameworkScriptFile": "test_utils/jasmine.js",
+    "unmockedModulePathPatterns": [
+      "node_modules",
+      "test_utils"
+    ]
   }
 }
