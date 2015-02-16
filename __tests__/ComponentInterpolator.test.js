@@ -9,20 +9,30 @@ var removeNoise = function(string) {
 
 describe('ComponentInterpolator', function() {
   it('renders', function() {
-    var subject = Subject({string: 'Hello World'});
+    var subject = Subject({
+      string: 'Hello World',
+      wrappers: {}
+    });
     expect(subject.isMounted()).toEqual(true);
     expect(subject.getDOMNode().textContent).toEqual('Hello World');
   });
 
   it('escapes html in the string', function() {
-    var subject = Subject({string: 'My favorite tag is <script />'});
+    var subject = Subject({
+      string: 'My favorite tag is <script />',
+      wrappers: {}
+    });
     expect(subject.getDOMNode().textContent).toEqual('My favorite tag is <script />');
   });
 
   it('interpolates components', function() {
     var subject = Subject({
       string: 'Ohai, Jane, click *here* right ***now **please** ***',
-      children: [<a href='/' key='1'/>, <b key='2'><i/></b>]
+      wrappers: {
+        '*': <a href='/'/>,
+        '**': <i/>,
+        '***': <b/>
+      }
     });
     expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
       'Ohai, Jane, click <a href="/">here</a> right <b>now <i>please</i> </b>'
