@@ -25,7 +25,7 @@ describe('ComponentInterpolator', function() {
     expect(subject.getDOMNode().textContent).toEqual('My favorite tag is <script />');
   });
 
-  it('interpolates components', function() {
+  it('interpolates wrapper components', function() {
     var subject = Subject({
       string: 'Ohai, Jane, click *here* right ***now **please** ***',
       wrappers: {
@@ -36,6 +36,17 @@ describe('ComponentInterpolator', function() {
     });
     expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
       'Ohai, Jane, click <a href="/">here</a> right <b>now <i>please</i> </b>'
+    );
+  });
+
+  it('interpolates placeholder components', function() {
+    var subject = Subject({
+      string: 'Create %{count} new accounts',
+      wrappers: {},
+      count: <input/>
+    });
+    expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
+      'Create <input> new accounts'
     );
   });
 });

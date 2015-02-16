@@ -25,6 +25,9 @@ var cloneWithProps = require('react/lib/cloneWithProps');
 var invariant = require('react/lib/invariant');
 var { string, object } = React.PropTypes;
 
+var WRAPPER_PATTERN = /(\*+)/;
+var PLACEHOLDER_PATTERN = /(%\{.*?\})/;
+
 var ComponentInterpolator = React.createClass({
   propTypes: {
     string: string.isRequired,
@@ -39,31 +42,51 @@ var ComponentInterpolator = React.createClass({
   },
 
   inferChildren() {
-    var tokens = (this.props.string || '').split(/(\*+)/);
-    return this.interpolateComponents(tokens);
+    var tokens = (this.props.string || '').split(WRAPPER_PATTERN);
+    return this.interpolateAllComponents(tokens);
   },
 
-  interpolateComponents(tokens, eof) {
+  interpolateAllComponents(tokens, eof) {
     var token, child
     var children = [];
     var wrappers = this.props.wrappers || {};
     while (tokens.length) {
       token = tokens.shift();
       if (token === eof) break;
-      if (token.match(/\*/)) {
+      if (token.match(WRAPPER_PATTERN)) {
         invariant(
           child = wrappers[token],
-          `<ComponentInterpolator>'s string expected ${token} wrapper, none found`
+          `<ComponentInterpolator> expected '${token}' wrapper, none found`
         )
         child = cloneWithProps(child, {
           key: token,
-          children: this.interpolateComponents(tokens, token)
+          children: this.interpolateAllComponents(tokens, token)
         });
+        children.push(child);
       }
       else {
-        child = token;
+        children.push.apply(children, this.interpolatePlaceholders(token));
       }
-      children.push(child);
+    }
+    return children;
+  },
+
+  interpolatePlaceholders(string) {
+    var token;
+    var tokens = string.split(PLACEHOLDER_PATTERN);
+    var children = [];
+    while (tokens.length) {
+      token = tokens.shift();
+      if (token.match(PLACEHOLDER_PATTERN)) {
+        token = token.slice(2, -1);
+        invariant(
+          child = this.props[token],
+          `<ComponentInterpolator> expected '${token}' placeholder value, none found`
+        )
+        children.push(child);
+      } else {
+        children.push(token);
+      }
     }
     return children;
   },
