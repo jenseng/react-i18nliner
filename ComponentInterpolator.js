@@ -47,7 +47,7 @@ var ComponentInterpolator = React.createClass({
   },
 
   interpolateAllComponents(tokens, eof) {
-    var token, child
+    var token, child;
     var children = [];
     var wrappers = this.props.wrappers || {};
     while (tokens.length) {
@@ -57,9 +57,9 @@ var ComponentInterpolator = React.createClass({
         invariant(
           child = wrappers[token],
           `<ComponentInterpolator> expected '${token}' wrapper, none found`
-        )
+        );
         child = cloneWithProps(child, {
-          key: token,
+          key: tokens.length,
           children: this.interpolateAllComponents(tokens, token)
         });
         children.push(child);
@@ -82,7 +82,8 @@ var ComponentInterpolator = React.createClass({
         invariant(
           child = this.props[token],
           `<ComponentInterpolator> expected '${token}' placeholder value, none found`
-        )
+        );
+        child = cloneWithProps(child, {key: tokens.length});
         children.push(child);
       } else {
         children.push(token);
