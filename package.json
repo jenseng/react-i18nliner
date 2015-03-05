@@ -24,5 +24,8 @@
       "node_modules",
       "test_utils"
     ]
+  },
+  "dependencies": {
+    "recast": "0.10.5"
   }
 }
