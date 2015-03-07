@@ -2,16 +2,17 @@ jest.autoMockOff();
 var subject = require('../preprocess');
 
 describe('preprocess', function() {
-  it('doesn\'t transform non-Translate elements', function() {
-    expect(subject('<div />')).toEqual('<div />');
+  it('doesn\'t transform non-translatable content', function() {
+    expect(subject('<div>hello</div>')).toEqual('<div>hello</div>');
   });
 
-  // TODO: don't do a ComponentInterpolator unless there are actually components
-  it('transforms Translate into ComponentInterpolator', function() {
-    expect(subject('<Translate>hello</Translate>')).toEqual('<ComponentInterpolator string={I18n.t("hello")} />');
+  it('transforms translatable content', function() {
+    expect(subject('<div translate="yes">hello</div>')).toEqual('<div>{I18n.t("hello")}</div>');
   });
 
-  it('concatenates child literals');
+  xit('transforms translatable content with markup', function() {
+    expect(subject('<div translate="yes">hello <b>world</b></div>')).toEqual('<div><ComponentInterpolator string={I18n.t("hello *world*")} wrappers={{"*":<b/>}}/></div>');
+  });
 
   it('creates placeholders for expressions');
 
