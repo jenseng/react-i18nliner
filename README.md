@@ -6,7 +6,6 @@
    if `I18n` isn't in scope (though you could have setting to say you want
    a global)
 2. create placeholders for translate="no"
-3. register extension w/ i18nliner
 
 ====
 
