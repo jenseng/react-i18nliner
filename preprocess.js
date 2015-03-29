@@ -1,6 +1,8 @@
 var recast = require('recast');
 var b = recast.types.builders;
 
+var interpolatorName = "I18n.ComponentInterpolator";
+
 var findIndex = function(fn, ary) {
   for (var i = 0; i < ary.length; i++) {
     if (fn(ary[i]))
@@ -60,7 +62,7 @@ var componentInterpolatorFor = function(string, wrappers, placeholders) {
 
   return b.jsxElement(
     b.jsxOpeningElement(
-      b.jsxIdentifier("ComponentInterpolator"),
+      b.jsxIdentifier(interpolatorName),
       properties,
       true
     )

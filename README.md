@@ -49,22 +49,68 @@ will Just Work™.
 
 ## Installation
 
-TODO: depends on [this feature](https://github.com/jenseng/i18nliner-js/issues/12) ... until then you need some glue code.
+### 1. get i18n-js and i18nliner
+
+Get i18n-js and i18nliner installed [per these instructions](https://github.com/jenseng/i18nliner-js#installation).
+
+### 2. add react-i18nliner
 
 ```bash
-npm install i18nliner react-i18nliner --save
+npm install react-i18nliner --save
 ```
 
 And make sure your `.i18nrc` file has:
 
 ```json
 {
-  "plugins": {
-    "react-i18nliner": true
-  }
+  "plugins": [
+    "react-i18nliner"
+  ]
 }
 ```
 
-TODO: figure out registering w/ runtime extension
+This will ensure that when you export strings for translation, all of your
+new `translate="yes"` stuff will get picked up.
 
-TODO: instructions for browserify/webpack
+### 3. preprocess your all your js files with react-i18nliner
+
+TODO: webpack / browserify / broccoli / etc
+
+### 4. add the react-i18nliner runtime extensions to i18n-js
+
+Assuming you have a cjs-style app, do something like this:
+
+```js
+var I18n = require("./path/to/cjs'd/i18n");
+require("i18nliner/dist/lib/extensions/i18n_js")["default"](I18n);
+require("react-i18nliner/extensions/i18n_js")(I18n);
+```
+
+If you're using AMD/`<script>`/something else, see the [i18nliner-js README](https://github.com/jenseng/i18nliner-js#installation)
+for hints; these extensions can be set up exactly the same way as
+i18nliner-js's.
+
+## Working with translations
+
+Since react-i18nliner is just an i18nliner plugin, you can use the
+i18nliner bin / grunt task to extract translations from your codebase;
+it will pick up normal `I18n.t` usage, as well as your new
+`translate="yes"` components.
+
+Once you've gotten all your translations back from the translators,
+simply stick them the giant blob 'o json on `I18n.translations`; it
+expects the translations to be of the format:
+
+```js
+I18n.translations = {
+  "en": {
+    "some_key": "Hello World",
+    "another_key": "What's up?"
+  }
+  "es": {
+    "some_key": "Hola mundo",
+    "another_key": "¿Qué tal?"
+  },
+  ...
+}
+```
