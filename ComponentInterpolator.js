@@ -1,25 +1,3 @@
-/**
- * Given:
- *
- * <Translate>Ohai {this.props.user}, click <Link>here</Link> right <b>now <i>please</i></b>!</Translate>
- *
- * Pre-process it into:
- *
- * <ComponentInterpolator
- *   string={I18n.t("Ohai, %{user}, click *here* right ***now **please** ***", {user: this.props.user})"
- *   wrappers={{
- *     '*': <Link/>,
- *     '**': <b/>,
- *     '***': <i/>}}
- * />
- *
- * Which is equivalent to:
- *
- * <span>Ohai {this.props.user}, click <Link>here</Link> right <b>now <i>please</i></b>!</span>
- *
- * ... but completely localizable :)
- */
-
 var React = require('react');
 var cloneWithProps = require('react/lib/cloneWithProps');
 var invariant = require('react/lib/invariant');
