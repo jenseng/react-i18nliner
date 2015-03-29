@@ -6,4 +6,4 @@ module.exports = function(i18nliner) {
   JsProcessor.prototype.sourceFor = function(file) {
     return preprocess(fs.readFileSync(file).toString());
   };
-}
+};

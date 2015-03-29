@@ -22,11 +22,11 @@ describe('preprocess', function() {
   });
 
   it('creates placeholders for components with no textContent', function() {
-    expect(subject('<div translate="yes">Create <input /> new accounts</div>')).toEqual('<div><ComponentInterpolator string={I18n.t("Create %{input} new accounts")} input={<input />} /></div>')
+    expect(subject('<div translate="yes">Create <input /> new accounts</div>')).toEqual('<div><ComponentInterpolator string={I18n.t("Create %{input} new accounts")} input={<input />} /></div>');
   });
 
   it('ensures placeholders are unique', function() {
-    expect(subject('<div translate="yes"><input /> vs <input /></div>')).toEqual('<div><ComponentInterpolator string={I18n.t("%{input} vs %{input1}")} input={<input />} input1={<input />} /></div>')
+    expect(subject('<div translate="yes"><input /> vs <input /></div>')).toEqual('<div><ComponentInterpolator string={I18n.t("%{input} vs %{input1}")} input={<input />} input1={<input />} /></div>');
   });
 });
 

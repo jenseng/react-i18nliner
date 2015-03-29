@@ -25,6 +25,7 @@ var findTranslatableIndex = findIndex.bind(null, isTranslatable);
 
 var componentInterpolatorFor = function(string, wrappers, placeholders) {
   var properties = [];
+  var key;
   properties.push(
     b.jsxAttribute(
       b.jsxIdentifier("string"),
@@ -35,7 +36,7 @@ var componentInterpolatorFor = function(string, wrappers, placeholders) {
   if (Object.keys(wrappers).length) {
     var wrappersNode = b.objectExpression([]);
     for (key in wrappers) {
-      wrappersNode.properties.push(b.property("init", b.literal(key), wrappers[key]))
+      wrappersNode.properties.push(b.property("init", b.literal(key), wrappers[key]));
     }
     properties.push(
       b.jsxAttribute(
@@ -45,7 +46,7 @@ var componentInterpolatorFor = function(string, wrappers, placeholders) {
     );
   }
 
-  for (var key in placeholders) {
+  for (key in placeholders) {
     var value = placeholders[key];
     if (value.type !== "JSXExpressionContainer")
       value = b.jsxExpressionContainer(placeholders[key]);
@@ -55,7 +56,7 @@ var componentInterpolatorFor = function(string, wrappers, placeholders) {
         value
       )
     );
-  };
+  }
 
   return b.jsxElement(
     b.jsxOpeningElement(
@@ -103,7 +104,7 @@ var placeholderStringFor = function(node, placeholders) {
   var placeholder = placeholderBase;
   var i = 0;
   while (placeholders[placeholder]) {
-    placeholder = placeholderBase + ++i;
+    placeholder = placeholderBase + (++i);
   }
   placeholders[placeholder] = node;
   return "%{" + placeholder + "}";
