@@ -114,3 +114,13 @@ I18n.translations = {
   ...
 }
 ```
+
+## Related Projects
+
+* [i18nliner (ruby)](https://github.com/jenseng/i18nliner)
+* [i18nliner-js](https://github.com/jenseng/i18nliner-js)
+* [i18nliner-handlebars](https://github.com/fivetanley/i18nliner-handlebars)
+
+## License
+
+Copyright (c) 2015 Jon Jensen, released under the MIT license
