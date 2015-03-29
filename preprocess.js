@@ -1,6 +1,8 @@
 var recast = require('recast');
 var b = recast.types.builders;
 
+var PLACEHOLDER_PATTERN = /(%\{.*?\})/;
+
 var interpolatorName = "I18n.ComponentInterpolator";
 
 var findIndex = function(fn, ary) {
@@ -70,15 +72,32 @@ var componentInterpolatorFor = function(string, wrappers, placeholders) {
 };
 
 var translateCallFor = function(string) {
+  var args = [
+    b.literal(string)
+  ];
+
+  // create dummy placeholders; we want ComponentInterpolator to do the
+  // actual interpolation. we don't want I18n.t to strip placeholders or
+  // error out due to missing values
+  var tokens = string.split(PLACEHOLDER_PATTERN);
+  if (tokens.length > 1) {
+    var optionsNode = b.objectExpression([]);
+    while (tokens.length) {
+      var token = tokens.shift();
+      if (token.match(PLACEHOLDER_PATTERN)) {
+        optionsNode.properties.push(b.property("init", b.literal(token.slice(2, -1)), b.literal(token)));
+      }
+    }
+    args.push(optionsNode);
+  }
+
   return b.callExpression(
     b.memberExpression(
       b.identifier("I18n"),
       b.identifier("t"),
       false
     ),
-    [
-      b.literal(string)
-    ]
+    args
   );
 };
 
