@@ -5,7 +5,7 @@
 1. figure out how to ensure runtime dependency ... perhaps extraction error
    if `I18n` isn't in scope (though you could have setting to say you want
    a global)
-2. create placeholders for translate="no"
+2. instructions/examples/code for hooking up preprocessor
 
 ====
 

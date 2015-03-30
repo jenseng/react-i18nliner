@@ -25,6 +25,10 @@ describe('preprocess', function() {
     expect(subject('<div translate="yes">Create <input /> new accounts</div>')).toEqual('<div><I18n.ComponentInterpolator string={I18n.t("Create %{input} new accounts", { "input": "%{input}" })} input={<input />} /></div>');
   });
 
+  it('creates placeholders for translate="no" components', function() {
+    expect(subject('<div translate="yes">to create an alert, type <code translate="no">alert()</code></div>')).toEqual('<div><I18n.ComponentInterpolator string={I18n.t("to create an alert, type %{code_alert}", { "code_alert": "%{code_alert}" })} code_alert={<code>alert()</code>} /></div>');
+  });
+
   it('ensures placeholders are unique', function() {
     expect(subject('<div translate="yes"><input /> vs <input /></div>')).toEqual('<div><I18n.ComponentInterpolator string={I18n.t("%{input} vs %{input1}", { "input": "%{input}", "input1": "%{input1}" })} input={<input />} input1={<input />} /></div>');
   });

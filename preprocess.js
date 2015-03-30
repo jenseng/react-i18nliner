@@ -13,19 +13,29 @@ var findIndex = function(fn, ary) {
   return -1;
 };
 
-var isTranslatable = function(attribute) {
-  return attribute.name.name === "translate" &&
-    attribute.value.value === "yes";
-};
-
 var hasLiteralContent = function(node) {
   if (node.type === "Literal") return true;
+  if (node.type !== "JSXElement") return false;
+  if (extractTranslateAttribute(node) === "no") return false;
   return node.children && node.children.some(function(child) {
     return hasLiteralContent(child);
   });
 };
 
-var findTranslatableIndex = findIndex.bind(null, isTranslatable);
+var findTranslateIndex = findIndex.bind(null, function(attribute) {
+  return attribute.name.name === "translate";
+});
+
+var extractTranslateAttribute = function(node) {
+  var attributes = node.openingElement.attributes;
+  var translateIndex = findTranslateIndex(attributes);
+  var translate;
+  if (translateIndex >= 0) {
+    translate = attributes[translateIndex].value.value;
+    attributes.splice(translateIndex, 1);
+  }
+  return translate;
+};
 
 var componentInterpolatorFor = function(string, wrappers, placeholders) {
   var properties = [];
@@ -116,7 +126,8 @@ var wrappedStringFor = function(node, wrappers, placeholders) {
 
 var placeholderStringFor = function(node, placeholders) {
   var source = recast.print(node).code;
-  var placeholderBase = source.replace(/[^A-Za-z0-9]/g, ' ')
+  var placeholderBase = source.replace(/<\/[^>]+>/g, '')
+                              .replace(/[^A-Za-z0-9]/g, ' ')
                               .replace(/([A-Z]+)?([A-Z])/g, '$1 $2')
                               .toLowerCase()
                               .trim()
@@ -159,10 +170,7 @@ var translateExpressionFor = function(node) {
 var transformations = {
   visitJSXElement(path) {
     var node = path.value;
-    var attributes = node.openingElement.attributes;
-    var translateIndex = findTranslatableIndex(attributes);
-    if (translateIndex >= 0) {
-      attributes.splice(translateIndex, 1);
+    if (extractTranslateAttribute(node) === "yes") {
       node.children = [translateExpressionFor(node)];
     }
     this.traverse(path);
