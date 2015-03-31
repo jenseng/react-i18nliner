@@ -38,12 +38,12 @@ I18nliner will do it for you.
 react-i18nliner preprocesses your JSX, transforming it into something
 truly localizable. It infers placeholders for expressions and
 [wrappers](https://github.com/jenseng/i18nliner-js)
-for elements/components, and separates the localizable string. At runtime
+for elements/components, and separates the localizable string. At runtime,
 it localizes the string, interpolating the wrappers and placeholders into
 the correct locations.
 
 react-i18nliner also adds an extractor to I18nliner, so that you can
-extract all translatable strings from your codebase for translation. Once
+extract all translatable strings from your codebase. Once you get them
 translated, just put them on `window.I18n.translations` and everything
 will Just Work™.
 
