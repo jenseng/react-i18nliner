@@ -168,7 +168,7 @@ var translateExpressionFor = function(node) {
 };
 
 var transformations = {
-  visitJSXElement(path) {
+  visitJSXElement: function(path) {
     var node = path.value;
     if (extractTranslateAttribute(node) === "yes") {
       node.children = [translateExpressionFor(node)];
