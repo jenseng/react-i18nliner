@@ -1,14 +1,5 @@
 # react-i18nliner
 
-## todo
-
-1. figure out how to ensure runtime dependency ... perhaps extraction error
-   if `I18n` isn't in scope (though you could have setting to say you want
-   a global)
-2. instructions/examples/code for hooking up preprocessor
-
-====
-
 react-i18nliner brings [I18nliner](https://github.com/jenseng/i18nliner-js)
 to React via the [html `translate` attribute](http://www.w3.org/International/questions/qa-translate-flag). I18n doesn't get any easier than this.
 
@@ -74,7 +65,41 @@ new `translate="yes"` stuff will get picked up.
 
 ### 3. preprocess your all your js files with react-i18nliner
 
-TODO: webpack / browserify / broccoli / etc
+How you hook up the preprocessor will depend on how you bundle your assets:
+
+#### webpack
+
+Add [this loader](https://github.com/jenseng/react-i18nliner/blob/master/webpack-loader.js)
+to your config, e.g.
+
+```js
+{
+  module: {
+    loaders: [
+      { test: /\.js$/, loader: "react-i18nliner/webpack-loader" }
+      ...
+    ],
+  },
+  ...
+}
+```
+
+#### browserify
+
+Use [this transform](https://github.com/jenseng/react-i18nliner/blob/master/browserify-transform.js),
+e.g.
+
+```bash
+$ browserify -t react-i18nliner/browserify-transform app.js > bundle.js
+```
+
+#### something else?
+
+It's not too hard to roll your own; as you can see in the loader and
+transform above, the heavy lifting is done by `preprocess`. So whether
+you use ember-cli, sprockets, grunt concat, etc., it's relatively
+painless to add a little glue code that runs preprocess on each
+source file.
 
 ### 4. add the react-i18nliner runtime extensions to i18n-js
 
