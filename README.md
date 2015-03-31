@@ -141,6 +141,32 @@ I18n.translations = {
 }
 ```
 
+## Gotchas
+
+### Every JSX expression makes a placeholder
+
+This kind of gets to a general rule of i18n: don't concatenate strings. For example,
+
+```js
+return (<b translate="yes">
+         You are {this.props.isAuthorized ? "authorized" : "NOT authorized"}
+        </b>);
+```
+
+The extracted string will be `"You are %{opaque_placeholder}"` and the
+translators won't get a chance to translate the two inner strings (much
+less without context). So don't do that; whenever you have logically
+different sentences/phrases, internationalize them separately, e.g.
+
+```js
+return (this.props.isAuthorized ?
+         <b translate="yes">You are authorized</b> :
+         <b translate="yes">You are NOT authorized</b>);
+```
+
+**NOTE:** in a subsequent release of react-i18nliner, the former example
+will cause an `i18nliner:check` failure. You've been warned :)
+
 ## Related Projects
 
 * [i18nliner (ruby)](https://github.com/jenseng/i18nliner)
