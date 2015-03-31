@@ -64,7 +64,7 @@ And make sure your `.i18nrc` file has:
 This will ensure that when you export strings for translation, all of your
 new `translate="yes"` stuff will get picked up.
 
-### 3. preprocess your all your js files with react-i18nliner
+### 3. preprocess all your js files with react-i18nliner
 
 How you hook up the preprocessor will depend on how you bundle your assets:
 
