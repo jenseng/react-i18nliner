@@ -23,7 +23,7 @@ var hasLiteralContent = function(node) {
 };
 
 var findTranslateIndex = findIndex.bind(null, function(attribute) {
-  return attribute.name.name === "translate";
+  return attribute.name && attribute.name.name === "translate";
 });
 
 var extractTranslateAttribute = function(node) {
