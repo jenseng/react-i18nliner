@@ -26,17 +26,18 @@ I18nliner will do it for you.
 
 ## How does it work?
 
-react-i18nliner preprocesses your JSX, transforming it into something
-truly localizable. It infers placeholders for expressions and
-[wrappers](https://github.com/jenseng/i18nliner-js)
-for elements/components, and separates the localizable string. At runtime,
-it localizes the string, interpolating the wrappers and placeholders into
-the correct locations.
+react-i18nliner [preprocesses](https://github.com/jenseng/react-i18nliner/blob/master/preprocess.js)
+your JSX, transforming it into something truly localizable. It infers
+[placeholders for expressions](https://github.com/jenseng/react-i18nliner/blob/57f813bc3ef6769be7aab47eb42fd4d081e1a498/__tests__/preprocess.test.js#L21)
+and [wrappers for elements/components](https://github.com/jenseng/react-i18nliner/blob/57f813bc3ef6769be7aab47eb42fd4d081e1a498/__tests__/preprocess.test.js#L17),
+and separates the localizable string. [At runtime](https://github.com/jenseng/react-i18nliner/blob/master/ComponentInterpolator.js),
+it localizes the string, interpolating the [wrappers](https://github.com/jenseng/react-i18nliner/blob/57f813bc3ef6769be7aab47eb42fd4d081e1a498/__tests__/ComponentInterpolator.test.js#L28)
+and [placeholders](https://github.com/jenseng/react-i18nliner/blob/57f813bc3ef6769be7aab47eb42fd4d081e1a498/__tests__/ComponentInterpolator.test.js#L42) into the correct locations.
 
-react-i18nliner also adds an extractor to I18nliner, so that you can
-extract all translatable strings from your codebase. Once you get them
-translated, just put them on `window.I18n.translations` and everything
-will Just Work™.
+react-i18nliner also enhances I18nliner, so that it can extract any
+`translate="yes"` strings from your codebase (in addition to regular
+`I18n.t` calls). Once you get everything translated, just put it on
+`I18n.translations` and everything will Just Work™.
 
 ## Installation
 
