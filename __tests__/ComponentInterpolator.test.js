@@ -12,7 +12,7 @@ describe('ComponentInterpolator', function() {
     var subject = Subject({
       string: 'Hello World',
       wrappers: {}
-    });
+    }, ["$1"]);
     expect(subject.isMounted()).toEqual(true);
     expect(subject.getDOMNode().textContent).toEqual('Hello World');
   });
@@ -21,7 +21,7 @@ describe('ComponentInterpolator', function() {
     var subject = Subject({
       string: 'My favorite tag is <script />',
       wrappers: {}
-    });
+    }, ["$1"]);
     expect(subject.getDOMNode().textContent).toEqual('My favorite tag is <script />');
   });
 
@@ -29,13 +29,13 @@ describe('ComponentInterpolator', function() {
     var subject = Subject({
       string: 'Ohai, Jane, click *here* right ***now **please** ***',
       wrappers: {
-        '*': <a href='/'/>,
-        '**': <i/>,
-        '***': <b/>
+        '*': <a href='/'><img />$1</a>,
+        '**': <i>$1</i>,
+        '***': <b><em>$1</em></b>
       }
-    });
+    }, [<hr />, "$1"]);
     expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
-      'Ohai, Jane, click <a href="/">here</a> right <b>now <i>please</i> </b>'
+      '<hr>Ohai, Jane, click <a href="/"><img />here</a> right <b><em>now <i>please</i> </em></b>'
     );
   });
 
@@ -44,7 +44,7 @@ describe('ComponentInterpolator', function() {
       string: 'Create %{count} new accounts',
       wrappers: {},
       count: <input/>
-    });
+    }, ["$1"]);
     expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
       'Create <input> new accounts'
     );

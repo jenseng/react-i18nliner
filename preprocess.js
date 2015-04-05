@@ -148,7 +148,7 @@ var translateStringFor = function(node, wrappers, placeholders) {
     if (child.type === "Literal")
       string += child.value;
     else if (hasLiteralContent(child))
-      string += wrappedStringFor(child, wrappers);
+      string += wrappedStringFor(child, wrappers, placeholders);
     else
       string += placeholderStringFor(child, placeholders);
   });

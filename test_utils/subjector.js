@@ -5,9 +5,11 @@ module.exports = function(path) {
   var { addons: { TestUtils } } = React;
   var Component = require(path);
 
-  return function(props) {
+  return function(props, children) {
+    children = children || [];
+    var args = [Component, props].concat(children);
     return TestUtils.renderIntoDocument(
-      React.createElement(Component, props)
+      React.createElement.apply(React, args)
     );
   };
 };

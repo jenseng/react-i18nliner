@@ -12,13 +12,6 @@ var ComponentInterpolator = React.createClass({
     wrappers: object.isRequired
   },
 
-  componentWillMount() {
-    invariant(
-      !this.props.children,
-      '<ComponentInterpolator> cannot have any children'
-    );
-  },
-
   inferChildren() {
     var tokens = (this.props.string || '').split(WRAPPER_PATTERN);
     return this.interpolateAllComponents(tokens);
