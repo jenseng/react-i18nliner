@@ -50,7 +50,7 @@ describe('preprocess', function() {
   });
 
   it('ensures placeholders are unique', function() {
-    expect(subject('<div translate="yes"><input /> vs <input /></div>')).toEqual('<div><I18n.ComponentInterpolator string={I18n.t("%{input} vs %{input1}", { "input": "%{input}", "input1": "%{input1}" })} input={<input />} input1={<input />}>$1</I18n.ComponentInterpolator></div>');
+    expect(subject('<div translate="yes">{<input />} vs {<input />}</div>')).toEqual('<div><I18n.ComponentInterpolator string={I18n.t("%{input} vs %{input1}", { "input": "%{input}", "input1": "%{input1}" })} input={<input />} input1={<input />}>$1</I18n.ComponentInterpolator></div>');
   });
 });
 

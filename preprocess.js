@@ -16,10 +16,19 @@ var findIndex = function(fn, ary) {
 var hasLiteralContent = function(node) {
   if (node.type === "Literal") return true;
   if (node.type !== "JSXElement") return false;
-  if (extractTranslateAttribute(node) === "no") return false;
-  return node.children && node.children.some(function(child) {
-    return hasLiteralContent(child);
-  });
+  return node.children && node.children.some(hasLiteralContent);
+};
+
+var findNestedJSXExpressions = function(node, expressions) {
+  expressions = expressions || [];
+  if (node.type === "JSXExpressionContainer") {
+    expressions.push(node);
+  } else if (node.type === "JSXElement") {
+    node.children.forEach(function(child) {
+      findNestedJSXExpressions(child, expressions);
+    });
+  }
+  return expressions;
 };
 
 var findTranslateIndex = findIndex.bind(null, function(attribute) {
@@ -27,6 +36,7 @@ var findTranslateIndex = findIndex.bind(null, function(attribute) {
 });
 
 var extractTranslateAttribute = function(node) {
+  if (node.type !== "JSXElement") return;
   var attributes = node.openingElement.attributes;
   var translateIndex = findTranslateIndex(attributes);
   var translate;
@@ -37,7 +47,7 @@ var extractTranslateAttribute = function(node) {
   return translate;
 };
 
-var componentInterpolatorFor = function(string, wrappers, placeholders) {
+var componentInterpolatorFor = function(string, wrappers, placeholders, children) {
   var properties = [];
   var key;
   properties.push(
@@ -72,9 +82,6 @@ var componentInterpolatorFor = function(string, wrappers, placeholders) {
     );
   }
 
-  var children = [];
-  children.push(b.literal("$1"));
-
   return b.jsxElement(
     b.jsxOpeningElement(
       b.jsxIdentifier(interpolatorName),
@@ -83,7 +90,9 @@ var componentInterpolatorFor = function(string, wrappers, placeholders) {
     b.jsxClosingElement(
       b.jsxIdentifier(interpolatorName)
     ),
-    children
+    children.map(function(child) {
+      return typeof child === "string" ? b.literal(child) : child;
+    })
   );
 };
 
@@ -123,8 +132,9 @@ var wrappedStringFor = function(node, wrappers, placeholders) {
 
   wrappers[delimiter] = node;
   var innerNode = findInnerNodeFor(node);
-  var string = translateStringFor(innerNode, wrappers, placeholders);
-  innerNode.children = ["$1"];
+  var newChildren = [];
+  var string = translateStringFor(innerNode, wrappers, placeholders, newChildren);
+  innerNode.children = newChildren;
 
   return " " + delimiter + string + delimiter + " ";
 };
@@ -155,28 +165,51 @@ var placeholderStringFor = function(node, placeholders) {
   return "%{" + placeholder + "}";
 };
 
-var translateStringFor = function(node, wrappers, placeholders) {
+var translateStringFor = function(node, wrappers, placeholders, newChildren) {
   var string = "";
+  var standalones = newChildren;
   node.children.forEach(function(child) {
-    if (child.type === "Literal")
-      string += child.value;
-    else if (hasLiteralContent(child))
-      string += wrappedStringFor(child, wrappers, placeholders);
-    else
-      string += placeholderStringFor(child, placeholders);
+    var part;
+    var translateAttribute = extractTranslateAttribute(child);
+    if (child.type === "Literal") {
+      part = child.value;
+    } else if (hasLiteralContent(child) && translateAttribute !== "no") {
+      part = wrappedStringFor(child, wrappers, placeholders);
+    } else if (findNestedJSXExpressions(child).length === 1 ||
+               translateAttribute === "no") {
+      part = placeholderStringFor(child, placeholders);
+    } else {
+      standalones.push(child);
+      return;
+    }
+
+    // unless they are leading, flush any standalone tags to the string
+    // as placeholders; leading ones just go in newChildren
+    if (string) {
+      standalones.forEach(function(child) {
+        string += placeholderStringFor(child, placeholders);
+      });
+    }
+    standalones = [];
+    string += part;
   });
+  // make sure "$1" is present in newChildren, followed by any trailing
+  // standalone tags
+  standalones.unshift("$1");
+  newChildren.push.apply(newChildren, standalones);
   return string;
 };
 
 var translateExpressionFor = function(node) {
   var wrappers = {};
   var placeholders = {};
-  var string = translateStringFor(node, wrappers, placeholders)
+  var children = [];
+  var string = translateStringFor(node, wrappers, placeholders, children)
                 .replace(/ +/g, ' ')
                 .trim();
   var expression;
-  if (Object.keys(wrappers).length || Object.keys(placeholders).length) {
-    return componentInterpolatorFor(string, wrappers, placeholders);
+  if (Object.keys(wrappers).length || Object.keys(placeholders).length || children.length > 1) {
+    return componentInterpolatorFor(string, wrappers, placeholders, children);
   } else {
     return b.jsxExpressionContainer(translateCallFor(string, wrappers, placeholders));
   }
