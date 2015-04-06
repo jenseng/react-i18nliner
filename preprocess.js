@@ -72,12 +72,18 @@ var componentInterpolatorFor = function(string, wrappers, placeholders) {
     );
   }
 
+  var children = [];
+  children.push(b.literal("$1"));
+
   return b.jsxElement(
     b.jsxOpeningElement(
       b.jsxIdentifier(interpolatorName),
-      properties,
-      true
-    )
+      properties
+    ),
+    b.jsxClosingElement(
+      b.jsxIdentifier(interpolatorName)
+    ),
+    children
   );
 };
 
@@ -116,12 +122,19 @@ var wrappedStringFor = function(node, wrappers, placeholders) {
   while (wrappers[delimiter]) delimiter += "*";
 
   wrappers[delimiter] = node;
-  var string = translateStringFor(node, wrappers, placeholders);
-  node.children = [];
-  node.openingElement.selfClosing = true;
-  node.closingElement = null;
+  var innerNode = findInnerNodeFor(node);
+  var string = translateStringFor(innerNode, wrappers, placeholders);
+  innerNode.children = ["$1"];
 
-  return delimiter + string + delimiter;
+  return " " + delimiter + string + delimiter + " ";
+};
+
+var findInnerNodeFor = function(node) {
+  var nodesWithText = node.children.filter(hasLiteralContent);
+  if (nodesWithText.length === 1 && nodesWithText[0].type === "JSXElement")
+    return nodesWithText[0];
+  else
+    return node;
 };
 
 var placeholderStringFor = function(node, placeholders) {
@@ -158,7 +171,9 @@ var translateStringFor = function(node, wrappers, placeholders) {
 var translateExpressionFor = function(node) {
   var wrappers = {};
   var placeholders = {};
-  var string = translateStringFor(node, wrappers, placeholders);
+  var string = translateStringFor(node, wrappers, placeholders)
+                .replace(/ +/g, ' ')
+                .trim();
   var expression;
   if (Object.keys(wrappers).length || Object.keys(placeholders).length) {
     return componentInterpolatorFor(string, wrappers, placeholders);
