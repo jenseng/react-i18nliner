@@ -6,15 +6,64 @@ var { string, object } = React.PropTypes;
 var WRAPPER_PATTERN = /(\*+)/;
 var PLACEHOLDER_PATTERN = /(%\{.*?\})/;
 
+var toArray = function(children) {
+  if (children instanceof Array) return children.slice();
+  if (!children) return [];
+  return [children];
+};
+
+// Replace a "$1" text descendant in this tree with the newDescendants
+var injectNewDescendants = function(element, newDescendants, props, ensureInjected) {
+  newDescendants.injectedCount = newDescendants.injectedCount || 0;
+  props = props || {};
+
+  var children = toArray(element.props.children);
+  for (var i = 0; i < children.length; i++) {
+    var child = children[i];
+    children[i] = child.type ? injectNewDescendants(child, newDescendants) : child;
+  }
+
+  var injectIndex = getInjectIndex(children);
+  if (injectIndex >= 0) {
+    children.splice.apply(children, [injectIndex, 1].concat(newDescendants));
+    newDescendants.injectedCount++;
+  }
+
+  props.children = children;
+  if (ensureInjected) {
+    invariant(newDescendants.injectedCount === 1, 'wrappers must have a single "$1" text descendant');
+  }
+  return cloneWithProps(element, props);
+};
+
+var getInjectIndex = function(children, containerName) {
+  var child, index = -1;
+  for (var i = 0; i < children.length; i++) {
+    child = children[i];
+    if (typeof child !== "string") continue;
+    invariant(child === "$1", containerName + ' may not have any non-"$1" text children"');
+    invariant(index === -1, containerName + ' may not have multiple "$1" text children"');
+    index = i;
+  }
+  return index;
+};
+
 var ComponentInterpolator = React.createClass({
   propTypes: {
     string: string.isRequired,
-    wrappers: object.isRequired
+    wrappers: object
   },
 
   inferChildren() {
     var tokens = (this.props.string || '').split(WRAPPER_PATTERN);
-    return this.interpolateAllComponents(tokens);
+    var inferredChildren = this.interpolateAllComponents(tokens);
+
+    var currentChildren = toArray(this.props.children);
+
+    var index = getInjectIndex(currentChildren, '<ComponentInterpolator>');
+    invariant(index >= 0, '<ComponentInterpolator> must have a "$1" text child"');
+    currentChildren.splice.apply(currentChildren, [index, 1].concat(inferredChildren));
+    return currentChildren;
   },
 
   interpolateAllComponents(tokens, eof) {
@@ -29,10 +78,13 @@ var ComponentInterpolator = React.createClass({
           child = wrappers[token],
           `<ComponentInterpolator> expected '${token}' wrapper, none found`
         );
-        child = cloneWithProps(child, {
-          key: tokens.length,
-          children: this.interpolateAllComponents(tokens, token)
-        });
+
+        child = injectNewDescendants(
+          child,
+          this.interpolateAllComponents(tokens, token),
+          { key: tokens.length },
+          true
+        );
         children.push(child);
       }
       else {
@@ -54,7 +106,7 @@ var ComponentInterpolator = React.createClass({
           child = this.props[token],
           `<ComponentInterpolator> expected '${token}' placeholder value, none found`
         );
-        child = cloneWithProps(child, {key: tokens.length});
+        child = child.type ? cloneWithProps(child, {key: tokens.length}) : child;
         children.push(child);
       } else {
         children.push(token);

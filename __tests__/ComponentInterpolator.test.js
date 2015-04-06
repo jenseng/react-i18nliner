@@ -35,18 +35,19 @@ describe('ComponentInterpolator', function() {
       }
     }, [<hr />, "$1"]);
     expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
-      '<hr>Ohai, Jane, click <a href="/"><img />here</a> right <b><em>now <i>please</i> </em></b>'
+      '<hr>Ohai, Jane, click <a href="/"><img>here</a> right <b><em>now <i>please</i> </em></b>'
     );
   });
 
   it('interpolates placeholder components', function() {
     var subject = Subject({
-      string: 'Create %{count} new accounts',
+      string: 'Hi %{user}, create %{count} new accounts',
       wrappers: {},
-      count: <input/>
+      user: "Jane",
+      count: <input />
     }, ["$1"]);
     expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
-      'Create <input> new accounts'
+      'Hi Jane, create <input> new accounts'
     );
   });
 });
