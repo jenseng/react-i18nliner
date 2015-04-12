@@ -141,6 +141,33 @@ I18n.translations = {
 }
 ```
 
+## Configuration / Advanced Settings
+
+If you have certain tags that you always want to translate (e.g. `<h1>`),
+you can specify them in your `.i18nrc` via `autoTranslateTags`, e.g.
+
+```js
+{
+  "autoTranslateTags": ["h1", "h2", "h3", "h4", "h5", "h6", "p"]
+}
+```
+
+These tags will have an implicit `translate="yes"`, keeping your markup
+simple.
+
+Similarly, if you have certain tags you **don't** want to auto-translate
+(e.g. `<code>`), you can specify those in a similar manner:
+
+```js
+{
+  "neverTranslateTags": ["code"],
+}
+```
+
+Then if those are ever nested in a larger translatable element, they
+will be assumed to be untranslatable, and a placeholder will be created
+for them.
+
 ## Gotchas
 
 ### Every JSX expression makes a placeholder
