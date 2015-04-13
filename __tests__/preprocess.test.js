@@ -84,5 +84,25 @@ describe('preprocess', function() {
     expect(subject('<div translate="yes">{<input />} vs {<input />}</div>'))
           .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("%{input} vs %{input1}", { "input": "%{input}", "input1": "%{input1}" })} input={<input />} input1={<input />}>$1</I18n.ComponentInterpolator></div>');
   });
+
+  xit('translates translatable attributes in translate="yes" components', function() {
+    expect(subject('<a translate="yes" title="Your Account">Update Your Preferences</a>'))
+          .toEqual('<a title={I18n.t("Your Account")}>{I18n.t("Update Your Preferences")}</a>');
+  });
+
+  it('doesn\'t translate non-literal translatable attributes in translate="yes" components', function() {
+    expect(subject('<a translate="yes" title={someVar}>Update Your Preferences</a>'))
+          .toEqual('<a title={someVar}>{I18n.t("Update Your Preferences")}</a>');
+  });
+
+  it('doesn\'t translate non-translatable attributes in a translate="yes" component', function() {
+    expect(subject('<a translate="yes" href="/foo">Update Your Preferences</a>'))
+          .toEqual('<a href="/foo">{I18n.t("Update Your Preferences")}</a>');
+  });
+
+  it('doesn\'t translate translatable attributes in translate="no" components', function() {
+    expect(subject('<a translate="no" title="alert()">alert()</a>'))
+          .toEqual('<a title="alert()">alert()</a>');
+  });
 });
 

@@ -1,6 +1,29 @@
 var recast = require('recast');
 var b = recast.types.builders;
 
+// http://www.w3.org/TR/html5/dom.html#the-translate-attribute
+// everything per the spec, except:
+//   iframe.srcdoc  -- yeesh, no thanks
+//   html.lang      -- *you* should set that)
+//   *.style        -- not a string literal in react-land, also not worth
+//                     the trouble just to translate `content` props
+//
+var translatableAttributes = {
+  "abbr":        ["th"],
+  "alt":         ["area", "img", "input"],
+  "content":     ["meta"],
+  "download":    ["a", "area"],
+  "label":       ["optgroup", "option", "track"],
+  "placeholder": ["input", "textarea"],
+  "title":       function() { return true },
+  "value":       function(node) {
+                   if (node.openingElement.name.name !== "input")
+                     return false;
+                   var type = findAttribute("type", false, node).toLowerCase();
+                   return type === "button" || type === "reset";
+                 }
+};
+
 var findIndex = function(fn, ary) {
   for (var i = 0; i < ary.length; i++) {
     if (fn(ary[i]))
@@ -40,37 +63,58 @@ var findNestedJSXExpressions = function(node, expressions) {
   return expressions;
 };
 
-var findTranslateIndex = findIndex.bind(null, function(attribute) {
-  return attribute.name && attribute.name.name === "translate";
-});
+var findAttributeIndex = function(name, array) {
+  return findIndex(function(attribute) {
+    return attribute.name && attribute.name.name === name;
+  }, array);
+};
 
-var extractTranslateAttribute = function(node) {
+var findAttribute = function(attribute, node, shouldSpliceFn) {
   if (node.type !== "JSXElement") return;
   var attributes = node.openingElement.attributes;
-  var translateIndex = findTranslateIndex(attributes);
-  var translate;
-  if (translateIndex >= 0) {
-    translate = attributes[translateIndex].value.value;
-    attributes.splice(translateIndex, 1);
+  var index = findAttributeIndex(attribute, attributes);
+  var value;
+  if (index >= 0) {
+    value = attributes[index].value.value;
+    if (shouldSpliceFn && shouldSpliceFn(value)) {
+      attributes.splice(index, 1);
+    }
   }
-  return translate;
+  return value;
 };
+
+var extractTranslateAttribute = findAttribute.bind(null, "translate");
+
 
 function transformationsFor(i18nliner) {
   i18nliner = i18nliner || {};
   i18nliner.autoTranslateTags = i18nliner.autoTranslateTags || [];
   i18nliner.neverTranslateTags = i18nliner.neverTranslateTags || [];
 
+  var isTranslating = false;
+
+  var setIsTranslating = function(newValue, fn) {
+    prevValue = isTranslating;
+    isTranslating = newValue;
+    fn();
+    isTranslating = prevValue;
+  };
+
   var PLACEHOLDER_PATTERN = /(%\{.*?\})/;
 
   var interpolatorName = "I18n.ComponentInterpolator";
 
   var isTranslatable = function(node, parentIsTranslatable) {
+    var alwaysSpliceTranslateAttr = (typeof parentIsTranslatable === "undefined");
+    var shouldSpliceTranslateAttr = function(value) {
+      return alwaysSpliceTranslateAttr || value === "yes";
+    };
+
     if (parentIsTranslatable !== true)
       parentIsTranslatable = false;
 
     var tagName = node.openingElement && node.openingElement.name.name;
-    var translateAttr = extractTranslateAttribute(node);
+    var translateAttr = extractTranslateAttribute(node, shouldSpliceTranslateAttr);
     if (translateAttr) {
       return translateAttr === "yes"
     } else if (tagName && i18nliner.autoTranslateTags.indexOf(tagName) >= 0) {
@@ -261,10 +305,19 @@ function transformationsFor(i18nliner) {
   return {
     visitJSXElement: function(path) {
       var node = path.value;
-      if (isTranslatable(node)) {
-        node.children = [translateExpressionFor(node)];
-      }
-      this.traverse(path);
+      var shouldTranslate = isTranslatable(node) && !isTranslating;
+      setIsTranslating(shouldTranslate || isTranslating, function() {
+        if (shouldTranslate) {
+          node.children = [translateExpressionFor(node)];
+        }
+        this.traverse(path);
+      }.bind(this));
+    },
+
+    visitJSXExpressionContainer: function(path) {
+      setIsTranslating(false, function() {
+        this.traverse(path);
+      }.bind(this))
     }
   };
 }
