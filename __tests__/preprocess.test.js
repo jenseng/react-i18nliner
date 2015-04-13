@@ -85,7 +85,7 @@ describe('preprocess', function() {
           .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("%{input} vs %{input1}", { "input": "%{input}", "input1": "%{input1}" })} input={<input />} input1={<input />}>$1</I18n.ComponentInterpolator></div>');
   });
 
-  xit('translates translatable attributes in translate="yes" components', function() {
+  it('translates translatable attributes in translate="yes" components', function() {
     expect(subject('<a translate="yes" title="Your Account">Update Your Preferences</a>'))
           .toEqual('<a title={I18n.t("Your Account")}>{I18n.t("Update Your Preferences")}</a>');
   });

@@ -1,5 +1,12 @@
 # react-i18nliner
 
+## CAVEAT: THIS IS VERY MUCH STILL A WIP
+
+I'm not using this anywhere yet, but will be very soon. If you find bugs,
+I am not surprised. That said, please report them ;)
+
+=====
+
 react-i18nliner brings [I18nliner](https://github.com/jenseng/i18nliner-js)
 to React via the [html `translate` attribute](http://www.w3.org/International/questions/qa-translate-flag). I18n doesn't get any easier than this.
 
@@ -34,10 +41,57 @@ and separates the localizable string. [At runtime](https://github.com/jenseng/re
 it localizes the string, interpolating the [wrappers](https://github.com/jenseng/react-i18nliner/blob/57f813bc3ef6769be7aab47eb42fd4d081e1a498/__tests__/ComponentInterpolator.test.js#L28)
 and [placeholders](https://github.com/jenseng/react-i18nliner/blob/57f813bc3ef6769be7aab47eb42fd4d081e1a498/__tests__/ComponentInterpolator.test.js#L42) into the correct locations.
 
+[Translatable attributes](http://www.w3.org/TR/html5/dom.html#the-translate-attribute) on or within the `translate="yes"` will also be detected and preprocessed into `I18n.t` calls.
+
 react-i18nliner also enhances I18nliner, so that it can extract any
 `translate="yes"` strings from your codebase (in addition to regular
 `I18n.t` calls). Once you get everything translated, just put it on
 `I18n.translations` and everything will Just Work™.
+
+## Examples
+
+### Placeholders
+
+A placeholder will be created for the input:
+
+```html
+<label translate="yes">
+  Create <input /> new accounts
+</label>
+```
+
+As well as for arbitrary JSX expressions:
+
+```html
+<div translate="yes">
+  Welcome back, {user.name}.
+</div>
+```
+
+### Wrappers
+
+Translators won't see any markup; it will be replaced with a simple wrapper
+notation. In this example, the extracted string would be `"That is *not*
+the right answer"`:
+
+```html
+<div translate="yes">
+  That is <b>not the right answer</b>
+</div>
+```
+
+### Attributes
+
+In addition to the `"Edit your settings *here*"` string, the
+`Your Account"` will also be preprocessed, since it is a valid
+[translatable attribute](http://www.w3.org/TR/html5/dom.html#the-translate-attribute).
+
+```html
+<div translate="yes">
+  Edit your settings <a href="/foo" title="Your Account">here</a>
+</div>
+```
+
 
 ## Installation
 
@@ -169,6 +223,21 @@ will be assumed to be untranslatable, and a placeholder will be created
 for them.
 
 ## Gotchas
+
+### What about pluralization? Or gender?
+
+i18nliner does support basic pluralization (via i18n-js), but you need
+to use pure js for that, e.g.
+
+```html
+<div>
+  {I18n.t({one: "You have 1 item", other: "You have %{count} items"}, {count: theCount})}
+</div>
+```
+
+i18n-js doesn't support gender-based localizations, but I do plan on
+making i18nliner work with other backends soon (e.g. i18next, FormatJS).
+Watch this space, or better yet, create a pull request ;)
 
 ### Every JSX expression makes a placeholder
 

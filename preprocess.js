@@ -17,11 +17,23 @@ var translatableAttributes = {
   "placeholder": ["input", "textarea"],
   "title":       function() { return true },
   "value":       function(node) {
-                   if (node.openingElement.name.name !== "input")
+                   if (node.name.name !== "input")
                      return false;
                    var type = findAttribute("type", false, node).toLowerCase();
                    return type === "button" || type === "reset";
                  }
+};
+
+var isTranslatableAttribute = function(node, attribute) {
+  var name = attribute.name.name;
+  if (!translatableAttributes[name]) return false;
+  if (attribute.value.type !== "Literal") return false;
+
+  var rules = translatableAttributes[name];
+  if (typeof rules === "function")
+    return rules(node);
+  else
+    return rules.indexOf(node.name.name) >= 0;
 };
 
 var findIndex = function(fn, ary) {
@@ -318,6 +330,13 @@ function transformationsFor(i18nliner) {
       setIsTranslating(false, function() {
         this.traverse(path);
       }.bind(this))
+    },
+
+    visitJSXAttribute: function(path) {
+      if (isTranslating && isTranslatableAttribute(path.parentPath.parentPath.value, path.value)) {
+        path.value.value =  b.jsxExpressionContainer(translateCallFor(path.value.value.value));
+      }
+      this.traverse(path);
     }
   };
 }
