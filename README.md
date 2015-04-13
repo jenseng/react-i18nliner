@@ -41,11 +41,11 @@ and separates the localizable string. [At runtime](https://github.com/jenseng/re
 it localizes the string, interpolating the [wrappers](https://github.com/jenseng/react-i18nliner/blob/57f813bc3ef6769be7aab47eb42fd4d081e1a498/__tests__/ComponentInterpolator.test.js#L28)
 and [placeholders](https://github.com/jenseng/react-i18nliner/blob/57f813bc3ef6769be7aab47eb42fd4d081e1a498/__tests__/ComponentInterpolator.test.js#L42) into the correct locations.
 
-[Translatable attributes](http://www.w3.org/TR/html5/dom.html#the-translate-attribute) on or within the `translate="yes"` will also be detected and preprocessed into `I18n.t` calls.
+Localizable strings are detected both from the text nodes, as well as from [translatable attributes](http://www.w3.org/TR/html5/dom.html#the-translate-attribute) within the `translate="yes"` element.
 
-react-i18nliner also enhances I18nliner, so that it can extract any
+react-i18nliner enhances I18nliner, so that it can extract any of these
 `translate="yes"` strings from your codebase (in addition to regular
-`I18n.t` calls). Once you get everything translated, just put it on
+`I18n.t` calls). Once you get everything translated, just stick it on
 `I18n.translations` and everything will Just Work™.
 
 ## Examples
@@ -76,7 +76,7 @@ the right answer"`:
 
 ```html
 <div translate="yes">
-  That is <b>not the right answer</b>
+  That is <b>not</b> the right answer
 </div>
 ```
 
