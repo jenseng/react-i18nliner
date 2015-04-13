@@ -57,7 +57,7 @@ describe('preprocess', function() {
 
   it('creates placeholders for translate="no" components', function() {
     expect(subject('<div translate="yes">to create an alert, type <code translate="no">alert()</code></div>'))
-          .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("to create an alert, type %{code_alert}", { "code_alert": "%{code_alert}" })} code_alert={<code>alert()</code>}>$1</I18n.ComponentInterpolator></div>');
+          .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("to create an alert, type %{alert}", { "alert": "%{alert}" })} alert={<code>alert()</code>}>$1</I18n.ComponentInterpolator></div>');
   });
 
   it('auto-translates autoTranslateTags', function() {
@@ -72,7 +72,7 @@ describe('preprocess', function() {
 
   it('creates placeholders for neverTranslateTags', function() {
     expect(subject('<div translate="yes">If you type <code>alert()</code> you\'ll get an alert.</div>', {neverTranslateTags: ['code']}))
-          .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("If you type %{code_alert} you\'ll get an alert.", { "code_alert": "%{code_alert}" })} code_alert={<code>alert()</code>}>$1</I18n.ComponentInterpolator></div>');
+          .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("If you type %{alert} you\'ll get an alert.", { "alert": "%{alert}" })} alert={<code>alert()</code>}>$1</I18n.ComponentInterpolator></div>');
   });
 
   it('translates neverTranslateTags with translate="yes"', function() {
