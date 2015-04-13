@@ -15,6 +15,19 @@ var hasLiteralContent = function(node) {
   return node.children && node.children.some(hasLiteralContent);
 };
 
+var hasNonJSXDescendants = function(node) {
+  switch (node.type){
+    case "JSXElement":
+      return node.children && node.children.some(hasNonJSXDescendants);
+    case "JSXExpressionContainer":
+      return hasNonJSXDescendants(node.expression);
+    case "JSXEmptyExpression":
+      return false;
+    default:
+      return true;
+  }
+};
+
 var findNestedJSXExpressions = function(node, expressions) {
   expressions = expressions || [];
   if (node.type === "JSXExpressionContainer") {
@@ -169,15 +182,24 @@ function transformationsFor(i18nliner) {
       return node;
   };
 
-  var placeholderStringFor = function(node, placeholders) {
+  var placeholderBaseFor = function(node) {
     var source = recast.print(node).code;
-    var placeholderBase = source.replace(/<\/[^>]+>/g, '')
-                                .replace(/[^A-Za-z0-9]/g, ' ')
-                                .replace(/([A-Z]+)?([A-Z])/g, '$1 $2')
-                                .toLowerCase()
-                                .trim()
-                                .replace(/\s+/g, '_')
-                                .replace(/^this_((state|props)_)/, '');
+    var baseString = source.replace(/<\/[^>]+>/g, '')
+                           .replace(/([A-Z]+)?([A-Z])/g, '$1 $2')
+                           .replace(/this\.((state|props)\.)/g, '');
+
+    if (hasNonJSXDescendants(node)) {
+      baseString = baseString.replace(/<\w+[^>]*>/, '');
+    }
+
+    return baseString.toLowerCase()
+                     .replace(/[^a-z0-9]/g, ' ')
+                     .trim()
+                     .replace(/\s+/g, '_');
+  };
+
+  var placeholderStringFor = function(node, placeholders) {
+    var placeholderBase = placeholderBaseFor(node);
     var placeholder = placeholderBase;
     var i = 0;
     while (placeholders[placeholder]) {
