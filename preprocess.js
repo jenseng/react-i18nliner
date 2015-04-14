@@ -15,7 +15,7 @@ var translatableAttributes = {
   "download":    ["a", "area"],
   "label":       ["optgroup", "option", "track"],
   "placeholder": ["input", "textarea"],
-  "title":       function() { return true },
+  "title":       function() { return true; },
   "value":       function(node) {
                    if (node.name.name !== "input")
                      return false;
@@ -98,15 +98,15 @@ var findAttribute = function(attribute, node, shouldSpliceFn) {
 var extractTranslateAttribute = findAttribute.bind(null, "translate");
 
 
-function transformationsFor(i18nliner) {
-  i18nliner = i18nliner || {};
-  i18nliner.autoTranslateTags = i18nliner.autoTranslateTags || [];
-  i18nliner.neverTranslateTags = i18nliner.neverTranslateTags || [];
+function transformationsFor(config) {
+  config = config || {};
+  config.autoTranslateTags = config.autoTranslateTags || [];
+  config.neverTranslateTags = config.neverTranslateTags || [];
 
   var isTranslating = false;
 
   var setIsTranslating = function(newValue, fn) {
-    prevValue = isTranslating;
+    var prevValue = isTranslating;
     isTranslating = newValue;
     fn();
     isTranslating = prevValue;
@@ -128,10 +128,10 @@ function transformationsFor(i18nliner) {
     var tagName = node.openingElement && node.openingElement.name.name;
     var translateAttr = extractTranslateAttribute(node, shouldSpliceTranslateAttr);
     if (translateAttr) {
-      return translateAttr === "yes"
-    } else if (tagName && i18nliner.autoTranslateTags.indexOf(tagName) >= 0) {
+      return translateAttr === "yes";
+    } else if (tagName && config.autoTranslateTags.indexOf(tagName) >= 0) {
       return true;
-    } else if (tagName && i18nliner.neverTranslateTags.indexOf(tagName) >= 0) {
+    } else if (tagName && config.neverTranslateTags.indexOf(tagName) >= 0) {
       return false;
     } else {
       return parentIsTranslatable;
@@ -329,7 +329,7 @@ function transformationsFor(i18nliner) {
     visitJSXExpressionContainer: function(path) {
       setIsTranslating(false, function() {
         this.traverse(path);
-      }.bind(this))
+      }.bind(this));
     },
 
     visitJSXAttribute: function(path) {
@@ -341,8 +341,9 @@ function transformationsFor(i18nliner) {
   };
 }
 
-module.exports = function(source, i18nliner) {
-  var ast = recast.parse(source, i18nliner.recastOptions);
-  recast.visit(ast, transformationsFor(i18nliner));
+module.exports = function(source, config) {
+  config = config || {};
+  var ast = recast.parse(source, config.recastOptions);
+  recast.visit(ast, transformationsFor(config));
   return recast.print(ast).code;
 };

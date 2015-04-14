@@ -2,11 +2,8 @@ var fs = require("fs");
 var preprocess = require("./preprocess");
 
 module.exports = function(i18nliner) {
-  i18nliner.autoTranslateTags = [];
-  i18nliner.neverTranslateTags = [];
-
   var JsProcessor = i18nliner.processors.JsProcessor;
   JsProcessor.prototype.sourceFor = function(file) {
-    return preprocess(fs.readFileSync(file).toString(), i18nliner);
+    return preprocess(fs.readFileSync(file).toString(), i18nliner.config);
   };
 };
