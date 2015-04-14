@@ -342,7 +342,7 @@ function transformationsFor(i18nliner) {
 }
 
 module.exports = function(source, i18nliner) {
-  var ast = recast.parse(source);
+  var ast = recast.parse(source, i18nliner.recastOptions);
   recast.visit(ast, transformationsFor(i18nliner));
   return recast.print(ast).code;
 };
