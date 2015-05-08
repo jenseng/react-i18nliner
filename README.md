@@ -1,12 +1,5 @@
 # react-i18nliner
 
-## CAVEAT: THIS IS VERY MUCH STILL A WIP
-
-I'm not using this anywhere yet, but will be very soon. If you find bugs,
-I am not surprised. That said, please report them ;)
-
-=====
-
 react-i18nliner brings [I18nliner](https://github.com/jenseng/i18nliner-js)
 to React via the [html `translate` attribute](http://www.w3.org/International/questions/qa-translate-flag). I18n doesn't get any easier than this.
 
