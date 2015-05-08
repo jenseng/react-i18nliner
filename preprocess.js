@@ -306,7 +306,7 @@ function transformationsFor(config) {
     var placeholders = {};
     var children = [];
     var string = translateStringFor(node, wrappers, placeholders, children)
-                  .replace(/ +/g, ' ')
+                  .replace(/\s+/g, ' ')
                   .trim();
     if (Object.keys(wrappers).length || Object.keys(placeholders).length || children.length > 1) {
       return componentInterpolatorFor(string, wrappers, placeholders, children, node.loc);
