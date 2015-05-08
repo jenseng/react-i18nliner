@@ -138,13 +138,13 @@ function transformationsFor(config) {
     }
   };
 
-  var componentInterpolatorFor = function(string, wrappers, placeholders, children) {
+  var componentInterpolatorFor = function(string, wrappers, placeholders, children, loc) {
     var properties = [];
     var key;
     properties.push(
       b.jsxAttribute(
         b.jsxIdentifier("string"),
-        b.jsxExpressionContainer(translateCallFor(string))
+        b.jsxExpressionContainer(translateCallFor(loc, string))
       )
     );
 
@@ -187,7 +187,7 @@ function transformationsFor(config) {
     );
   };
 
-  var translateCallFor = function(string) {
+  var translateCallFor = function(loc, string) {
     var args = [
       b.literal(string)
     ];
@@ -207,9 +207,11 @@ function transformationsFor(config) {
       args.push(optionsNode);
     }
 
+    var receiver = b.identifier("I18n");
+    receiver.loc = loc;
     return b.callExpression(
       b.memberExpression(
-        b.identifier("I18n"),
+        receiver,
         b.identifier("t"),
         false
       ),
@@ -306,11 +308,10 @@ function transformationsFor(config) {
     var string = translateStringFor(node, wrappers, placeholders, children)
                   .replace(/ +/g, ' ')
                   .trim();
-    var expression;
     if (Object.keys(wrappers).length || Object.keys(placeholders).length || children.length > 1) {
-      return componentInterpolatorFor(string, wrappers, placeholders, children);
+      return componentInterpolatorFor(string, wrappers, placeholders, children, node.loc);
     } else {
-      return b.jsxExpressionContainer(translateCallFor(string, wrappers, placeholders));
+      return b.jsxExpressionContainer(translateCallFor(node.loc, string, wrappers, placeholders));
     }
   };
 
@@ -334,16 +335,25 @@ function transformationsFor(config) {
 
     visitJSXAttribute: function(path) {
       if (isTranslating && isTranslatableAttribute(path.parentPath.parentPath.value, path.value)) {
-        path.value.value =  b.jsxExpressionContainer(translateCallFor(path.value.value.value));
+        path.value.value =  b.jsxExpressionContainer(translateCallFor(path.value.loc, path.value.value.value));
       }
       this.traverse(path);
     }
   };
 }
 
-module.exports = function(source, config) {
+var preprocess = function(source, config) {
   config = config || {};
   var ast = recast.parse(source, config.recastOptions);
-  recast.visit(ast, transformationsFor(config));
+  preprocessAst(ast, config);
   return recast.print(ast).code;
 };
+
+var preprocessAst = function(ast, config) {
+  recast.visit(ast, transformationsFor(config));
+  return ast;
+};
+
+preprocess.ast = preprocessAst;
+
+module.exports = preprocess;
