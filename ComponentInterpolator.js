@@ -103,9 +103,10 @@ var ComponentInterpolator = React.createClass({
       if (token.match(PLACEHOLDER_PATTERN)) {
         token = token.slice(2, -1);
         invariant(
-          child = this.props[token],
+          this.props.hasOwnProperty(token),
           `<ComponentInterpolator> expected '${token}' placeholder value, none found`
         );
+        child = this.props[token];
         child = child.type ? cloneWithProps(child, {key: tokens.length}) : child;
         children.push(child);
       } else {

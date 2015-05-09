@@ -41,13 +41,14 @@ describe('ComponentInterpolator', function() {
 
   it('interpolates placeholder components', function() {
     var subject = Subject({
-      string: 'Hi %{user}, create %{count} new accounts',
+      string: 'Hi %{user} (%{user_id}), create %{count} new accounts',
       wrappers: {},
       user: "Jane",
+      user_id: 0,
       count: <input />
     }, ["$1"]);
     expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
-      'Hi Jane, create <input> new accounts'
+      'Hi Jane (0), create <input> new accounts'
     );
   });
 });
