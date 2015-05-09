@@ -107,7 +107,7 @@ var ComponentInterpolator = React.createClass({
           `<ComponentInterpolator> expected '${token}' placeholder value, none found`
         );
         child = this.props[token];
-        child = child.type ? cloneWithProps(child, {key: tokens.length}) : child;
+        child = child && child.type ? cloneWithProps(child, {key: tokens.length}) : child;
         children.push(child);
       } else {
         children.push(token);
