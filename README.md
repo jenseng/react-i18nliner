@@ -19,10 +19,13 @@ react-i18nliner lets you do this:
 
 Write your components as you normally would, and just put a
 `translate="yes"` attribute on any element/component that needs to be
-localized.
+localized. Seriously.
 
-Best of all, you don't need to maintain translation files anymore;
-I18nliner will do it for you.
+And because the default translation is inline, it will be used as a
+fallback if a translation is missing or hasn't happened yet.
+
+Best of all, you don't need to maintain separate translation files
+anymore; I18nliner will do it for you.
 
 ## How does it work?
 
@@ -61,11 +64,28 @@ As well as for arbitrary JSX expressions:
 </div>
 ```
 
+By default, placeholder keys will be inferred from the content, so a
+translator would see `"Create %{input} keys"` and `"Welcome back,
+%{user_name}"`. For complicated expressions, these placeholder keys can
+get a bit long/gnarly. Having to retranslate strings that "changed" just
+because you refactored some code is terrible, so you can use keys to
+be a bit more explicit:
+
+```html
+<label translate="yes">
+  Create <input key="numAccounts" onChange={this.addAccounts} /> new
+  accounts
+</label>
+```
+
+In this case the extracted string would just be `"Create %{num_accounts}
+new accounts"`
+
 ### Wrappers
 
-Translators won't see any markup; it will be replaced with a simple wrapper
-notation. In this example, the extracted string would be `"That is *not*
-the right answer"`:
+Translators won't see any components or markup; they will be replaced with
+a simple wrapper notation. In this example, the extracted string would be
+`"That is *not* the right answer"`:
 
 ```html
 <div translate="yes">
@@ -77,14 +97,14 @@ the right answer"`:
 
 In addition to the `"Edit your settings *here*"` string, the
 `Your Account"` will also be preprocessed, since it is a valid
-[translatable attribute](http://www.w3.org/TR/html5/dom.html#the-translate-attribute).
+[translatable attribute](http://www.w3.org/TR/html5/dom.html#the-translate-attribute)
+within a translated element.
 
 ```html
 <div translate="yes">
   Edit your settings <a href="/foo" title="Your Account">here</a>
 </div>
 ```
-
 
 ## Installation
 
