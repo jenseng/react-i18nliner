@@ -83,19 +83,23 @@ var findAttributeIndex = function(name, array) {
 
 var findAttribute = function(attribute, node, shouldSpliceFn) {
   if (node.type !== "JSXElement") return;
+
   var attributes = node.openingElement.attributes;
   var index = findAttributeIndex(attribute, attributes);
-  var value;
-  if (index >= 0) {
-    value = attributes[index].value.value;
-    if (shouldSpliceFn && shouldSpliceFn(value)) {
-      attributes.splice(index, 1);
-    }
+  if (index < 0) return;
+
+  var value = attributes[index].value;
+  if (attributes[index].value.type !== "Literal") return;
+
+  value = value.value;
+  if (shouldSpliceFn && shouldSpliceFn(value)) {
+    attributes.splice(index, 1);
   }
   return value;
 };
 
-var extractTranslateAttribute = findAttribute.bind(null, "translate");
+var findTranslateAttribute = findAttribute.bind(null, "translate");
+var findKeyAttribute = findAttribute.bind(null, "key");
 
 
 function transformationsFor(config) {
@@ -126,7 +130,7 @@ function transformationsFor(config) {
       parentIsTranslatable = false;
 
     var tagName = node.openingElement && node.openingElement.name.name;
-    var translateAttr = extractTranslateAttribute(node, shouldSpliceTranslateAttr);
+    var translateAttr = findTranslateAttribute(node, shouldSpliceTranslateAttr);
     if (translateAttr) {
       return translateAttr === "yes";
     } else if (tagName && config.autoTranslateTags.indexOf(tagName) >= 0) {
@@ -241,16 +245,25 @@ function transformationsFor(config) {
   };
 
   var placeholderBaseFor = function(node) {
-    var source = recast.print(node).code;
-    var baseString = source.replace(/<\/[^>]+>/g, '')
-                           .replace(/([A-Z]+)?([A-Z])/g, '$1 $2')
-                           .replace(/this\.((state|props)\.)/g, '');
+    if (node.type === "JSXExpressionContainer")
+      node = node.expression;
 
-    if (hasNonJSXDescendants(node)) {
-      baseString = baseString.replace(/<\w+[^>]*>/, '');
+    var baseString;
+    if (node.type === "JSXElement")
+      baseString = findKeyAttribute(node);
+
+    if (!baseString) {
+      var source = recast.print(node).code;
+      baseString = source.replace(/<\/[^>]+>/g, '')
+                         .replace(/this\.((state|props)\.)/g, '');
+
+      if (hasNonJSXDescendants(node)) {
+        baseString = baseString.replace(/<\w+[^>]*>/, '');
+      }
     }
 
-    return baseString.toLowerCase()
+    return baseString.replace(/([A-Z]+)?([A-Z])/g, '$1 $2')
+                     .toLowerCase()
                      .replace(/[^a-z0-9]/g, ' ')
                      .trim()
                      .replace(/\s+/g, '_');
@@ -277,7 +290,7 @@ function transformationsFor(config) {
         part = child.value;
       } else if (hasLiteralContent(child) && translatable) {
         part = wrappedStringFor(child, wrappers, placeholders);
-      } else if (findNestedJSXExpressions(child).length === 1 || !translatable) {
+      } else if (findNestedJSXExpressions(child).length === 1 || !translatable || findKeyAttribute(child)) {
         part = placeholderStringFor(child, placeholders);
       } else {
         standalones.push(child);

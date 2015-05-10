@@ -40,9 +40,19 @@ describe('preprocess', function() {
           .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("hello")}><img />$1<input /></I18n.ComponentInterpolator></div>');
   });
 
+  it('doesn\'t merge leading or trailing standalone elements with keys', function() {
+    expect(subject('<div translate="yes"><input key="user_1" /> versus <input key="user_2" /></div>'))
+          .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("%{user_1} versus %{user_2}", { "user_1": "%{user_1}", "user_2": "%{user_2}" })} user_1={<input key="user_1" />} user_2={<input key="user_2" />}>$1</I18n.ComponentInterpolator></div>');
+  });
+
   it('absorbs wrappers into placeholders if there is no other content', function() {
     expect(subject('<div translate="yes">hello <b>{user}</b></div>'))
           .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("hello %{user}", { "user": "%{user}" })} user={<b>{user}</b>}>$1</I18n.ComponentInterpolator></div>');
+  });
+
+  it('users the outermost key when absorbing wrappers into placeholders with no text content', function() {
+    expect(subject('<div translate="yes">hello <b key="name">{user.name}</b></div>'))
+          .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("hello %{name}", { "name": "%{name}" })} name={<b key="name">{user.name}</b>}>$1</I18n.ComponentInterpolator></div>');
   });
 
   it('creates placeholders for expressions', function() {
@@ -53,6 +63,16 @@ describe('preprocess', function() {
   it('creates placeholders for components with no textContent', function() {
     expect(subject('<div translate="yes">Create <input /> new accounts</div>'))
           .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("Create %{input} new accounts", { "input": "%{input}" })} input={<input />}>$1</I18n.ComponentInterpolator></div>');
+  });
+
+  it('uses the empty components\'s key as the placeholder name', function() {
+    expect(subject('<div translate="yes">Create <input key="numAccounts" /> new accounts</div>'))
+          .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("Create %{num_accounts} new accounts", { "num_accounts": "%{num_accounts}" })} num_accounts={<input key="numAccounts" />}>$1</I18n.ComponentInterpolator></div>');
+  });
+
+  it('doesn\'t use the empty components\'s key as the placeholder name if it\'s not a literal', function() {
+    expect(subject('<div translate="yes">Create <input key={something} /> new accounts</div>'))
+          .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("Create %{input_key_something} new accounts", { "input_key_something": "%{input_key_something}" })} input_key_something={<input key={something} />}>$1</I18n.ComponentInterpolator></div>');
   });
 
   it('creates placeholders for translate="no" components', function() {
