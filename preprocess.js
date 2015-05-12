@@ -233,7 +233,7 @@ function transformationsFor(config) {
     var string = translateStringFor(innerNode, wrappers, placeholders, newChildren);
     innerNode.children = newChildren;
 
-    return " " + delimiter + string + delimiter + " ";
+    return delimiter + string + delimiter;
   };
 
   var findInnerNodeFor = function(node) {
@@ -283,15 +283,21 @@ function transformationsFor(config) {
   var translateStringFor = function(node, wrappers, placeholders, newChildren) {
     var string = "";
     var standalones = newChildren;
+    var lastPartType = "wrapper";
     node.children.forEach(function(child) {
       var part;
       var translatable = isTranslatable(child, true);
       if (child.type === "Literal") {
         part = child.value;
+        lastPartType = "literal";
       } else if (hasLiteralContent(child) && translatable) {
         part = wrappedStringFor(child, wrappers, placeholders);
+        if (lastPartType === "wrapper")
+          part = " " + part;
+        lastPartType = "wrapper";
       } else if (findNestedJSXExpressions(child).length === 1 || !translatable || findKeyAttribute(child)) {
         part = placeholderStringFor(child, placeholders);
+        lastPartType = "placeholder";
       } else {
         standalones.push(child);
         return;
@@ -302,11 +308,14 @@ function transformationsFor(config) {
       if (string) {
         standalones.forEach(function(child) {
           string += placeholderStringFor(child, placeholders);
+          lastPartType = "placeholder";
         });
       }
       standalones = [];
       string += part;
     });
+    if (lastPartType === "wrapper")
+      string += " ";
     // make sure "$1" is present in newChildren, followed by any trailing
     // standalone tags
     standalones.unshift("$1");

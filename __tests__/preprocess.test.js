@@ -124,5 +124,10 @@ describe('preprocess', function() {
     expect(subject('<a translate="no" title="alert()">alert()</a>'))
           .toEqual('<a title="alert()">alert()</a>');
   });
+
+  it('preserves (lack of) whitespace between adjacent wrappers and other content', function() {
+    expect(subject('<div translate="yes"><b>{num}</b><i>%</i>, or approximately <i>$</i>{money}</div>'))
+          .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("%{num}*%*, or approximately **$**%{money}", { "num": "%{num}", "money": "%{money}" })} wrappers={{ "*": <i>$1</i>, "**": <i>$1</i> }} num={<b>{num}</b>} money={money}>$1</I18n.ComponentInterpolator></div>')
+  });
 });
 
