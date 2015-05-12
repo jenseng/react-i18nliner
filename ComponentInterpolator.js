@@ -56,6 +56,7 @@ var ComponentInterpolator = React.createClass({
 
   inferChildren() {
     var tokens = (this.props.string || '').split(WRAPPER_PATTERN);
+    this.keyCounter = 0;
     var inferredChildren = this.interpolateAllComponents(tokens);
 
     var currentChildren = toArray(this.props.children);
@@ -82,7 +83,7 @@ var ComponentInterpolator = React.createClass({
         child = injectNewDescendants(
           child,
           this.interpolateAllComponents(tokens, token),
-          { key: tokens.length },
+          { key: this.keyCounter++ },
           true
         );
         children.push(child);
@@ -107,7 +108,7 @@ var ComponentInterpolator = React.createClass({
           `<ComponentInterpolator> expected '${token}' placeholder value, none found`
         );
         child = this.props[token];
-        child = child && child.type ? cloneWithProps(child, {key: tokens.length}) : child;
+        child = child && child.type ? cloneWithProps(child, {key: this.keyCounter++}) : child;
         children.push(child);
       } else {
         children.push(token);
