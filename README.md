@@ -96,7 +96,7 @@ a simple wrapper notation. In this example, the extracted string would be
 ### Attributes
 
 In addition to the `"Edit your settings *here*"` string, the
-`Your Account"` will also be preprocessed, since it is a valid
+`"Your Account"` will also be preprocessed, since it is a valid
 [translatable attribute](http://www.w3.org/TR/html5/dom.html#the-translate-attribute)
 within a translated element.
 
@@ -221,6 +221,20 @@ you can specify them in your `.i18nrc` via `autoTranslateTags`, e.g.
 
 These tags will have an implicit `translate="yes"`, keeping your markup
 simple.
+
+Note that this works for both regular HTML elements, as well as for your
+own custom components. For example, if you decided you wanted to use a
+`<T>` component everywhere instead of `translate="yes"`, you could add it
+to autoTranslateTags, and its runtime implementation could be as simple
+as:
+
+```js
+const T = React.createClass({
+  render() {
+    return <span {...this.props} />;
+  }
+})
+```
 
 Similarly, if you have certain tags you **don't** want to auto-translate
 (e.g. `<code>`), you can specify those in a similar manner:
