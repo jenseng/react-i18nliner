@@ -50,7 +50,7 @@ describe('preprocess', function() {
           .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("hello %{user}", { "user": "%{user}" })} user={<b>{user}</b>}>$1</I18n.ComponentInterpolator></div>');
   });
 
-  it('users the outermost key when absorbing wrappers into placeholders with no text content', function() {
+  it('uses the outermost key when absorbing wrappers into placeholders with no text content', function() {
     expect(subject('<div translate="yes">hello <b key="name">{user.name}</b></div>'))
           .toEqual('<div><I18n.ComponentInterpolator string={I18n.t("hello %{name}", { "name": "%{name}" })} name={<b key="name">{user.name}</b>}>$1</I18n.ComponentInterpolator></div>');
   });
