@@ -1,5 +1,4 @@
 var React = require('react');
-var cloneWithProps = require('react/lib/cloneWithProps');
 var invariant = require('react/lib/invariant');
 var { string, object } = React.PropTypes;
 
@@ -33,7 +32,7 @@ var injectNewDescendants = function(element, newDescendants, props, ensureInject
   if (ensureInjected) {
     invariant(newDescendants.injectedCount === 1, 'wrappers must have a single "$1" text descendant');
   }
-  return cloneWithProps(element, props);
+  return React.cloneElement(element, props);
 };
 
 var getInjectIndex = function(children, containerName) {
@@ -108,7 +107,7 @@ var ComponentInterpolator = React.createClass({
           `<ComponentInterpolator> expected '${token}' placeholder value, none found`
         );
         child = this.props[token];
-        child = child && child.type ? cloneWithProps(child, {key: this.keyCounter++}) : child;
+        child = child && child.type ? React.cloneElement(child, {key: this.keyCounter++}) : child;
         children.push(child);
       } else {
         children.push(token);
