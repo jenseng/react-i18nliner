@@ -1,4 +1,3 @@
-
 var escapeRegExp = function(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 };
@@ -17,5 +16,5 @@ module.exports = function(config) {
   return function(source) {
     pattern = pattern || getTranslatePattern(config);
     return !!source.match(pattern);
-  }
-}
+  };
+};

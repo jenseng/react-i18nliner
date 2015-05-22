@@ -4,7 +4,7 @@
   "description": "i18n made simple",
   "main": "main.js",
   "scripts": {
-    "test": "node_modules/.bin/jsxhint . && node_modules/.bin/jest",
+    "test": "node_modules/.bin/jsxhint *.js */*.js && node_modules/.bin/jest",
     "dist": "jsx --harmony --follow-requires . dist extensions/i18n_js"
   },
   "author": "Jon Jensen",
