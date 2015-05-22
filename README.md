@@ -152,6 +152,9 @@ to your config, e.g.
 }
 ```
 
+Check out [this example app](https://github.com/jenseng/react-i18nliner/tree/master/examples/webpack)
+to see how everything is wired together.
+
 #### browserify
 
 Use [this transform](https://github.com/jenseng/react-i18nliner/blob/master/browserify-transform.js),
@@ -175,8 +178,8 @@ Assuming you have a cjs-style app, do something like this:
 
 ```js
 var I18n = require("./path/to/cjs'd/i18n");
-require("i18nliner/dist/lib/extensions/i18n_js")["default"](I18n);
-require("react-i18nliner/extensions/i18n_js")(I18n);
+require("i18nliner/dist/lib/extensions/i18n_js")(I18n);
+require("react-i18nliner/dist/extensions/i18n_js")(I18n);
 ```
 
 If you're using AMD/`<script>`/something else, see the [i18nliner-js README](https://github.com/jenseng/i18nliner-js#installation)

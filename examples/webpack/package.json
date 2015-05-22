@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "extend": "^2.0.1",
+    "i18n-js": "http://github.com/fnando/i18n-js/archive/v3.0.0.rc8.tar.gz",
+    "i18nliner": "*",
+    "json-loader": "^0.5.1",
+    "jsx-loader": "0.13.x",
+    "react": "0.13.x",
+    "react-i18nliner": "../..",
+    "webpack": "^1.9.8"
+  }
+}
