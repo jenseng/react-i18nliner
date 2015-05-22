@@ -27,7 +27,7 @@
     ]
   },
   "dependencies": {
-    "i18nliner": "^0.1.4",
+    "i18nliner": "^0.1.5",
     "recast": "^0.10.12",
     "through2": "^0.6.3"
   }
