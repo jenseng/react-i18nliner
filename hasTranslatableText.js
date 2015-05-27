@@ -1,6 +1,4 @@
-var escapeRegExp = function(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-};
+var escapeRegExp = require("./util/escapeRegExp");
 
 var getTranslatePattern = function(config) {
   var pattern = 'translate=["\']yes["\']';
