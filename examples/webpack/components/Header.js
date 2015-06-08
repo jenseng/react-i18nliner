@@ -29,7 +29,7 @@ module.exports = React.createClass({
              <option value="es-MX">Español (México)</option>,
              <option value="fr-FR">Français (France)</option>,
              <option value="pt-BR">Português (Brasil)</option>,
-             <option value="ja-JP">Japanese (日本語)</option>
+             <option value="ja-JP">日本語 (Japan)</option>
 
             </select>
           </label>
