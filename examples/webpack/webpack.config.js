@@ -7,9 +7,6 @@ module.exports = {
     path: __dirname,
     filename: "bundle.js"
   },
-  node: {
-    fs: 'empty',
-  },
   module: {
     loaders: [
       { test: /\.js$/, loader: "jsx-loader!react-i18nliner/webpack-loader" },
