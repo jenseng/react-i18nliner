@@ -6,8 +6,9 @@ the basic features of react-i18nliner.
 ## How do I run it?
 
 1. `npm install`
-2. `webpack` (assuming `./node_modules/.bin` is in your PATH)
-3. open index.html in a browser
+2. `npm run build` (uses `./node_modules/.bin/webpack` from your dependencies)
+3. `npm run extract` to generate sample json translations.
+4. open index.html in a browser
 
 ## What's this stuff in config/locales?
 
