@@ -10,13 +10,14 @@
   "author": "Jon Jensen",
   "license": "ISC",
   "devDependencies": {
-    "jest-cli": "^0.2.2",
-    "jsxhint": "^0.10.0",
-    "react": "0.13.x",
+    "invariant": "^2.1.1",
+    "jest-cli": "^0.5.10",
+    "jsxhint": "^0.15.1",
+    "react": "0.14.x",
     "react-tools": "0.13.x"
   },
   "peerDependencies": {
-    "react": "0.13.x"
+    "react": "0.14.x"
   },
   "jest": {
     "scriptPreprocessor": "test_utils/preprocessor.js",
@@ -29,6 +30,6 @@
   "dependencies": {
     "i18nliner": "^0.1.5",
     "recast": "^0.10.12",
-    "through2": "^0.6.3"
+    "through2": "^2.0.0"
   }
 }
