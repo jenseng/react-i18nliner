@@ -95,7 +95,7 @@ var ComponentInterpolator = React.createClass({
   },
 
   interpolatePlaceholders(string) {
-    var token;
+    var token, child;
     var tokens = string.split(PLACEHOLDER_PATTERN);
     var children = [];
     while (tokens.length) {
