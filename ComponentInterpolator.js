@@ -1,5 +1,5 @@
 var React = require('react');
-var invariant = require('react/lib/invariant');
+var invariant = require('invariant');
 var { string, object } = React.PropTypes;
 
 var WRAPPER_PATTERN = /(\*+)/;
@@ -95,7 +95,7 @@ var ComponentInterpolator = React.createClass({
   },
 
   interpolatePlaceholders(string) {
-    var token;
+    var token, child;
     var tokens = string.split(PLACEHOLDER_PATTERN);
     var children = [];
     while (tokens.length) {
