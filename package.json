@@ -16,7 +16,7 @@
     "react-tools": "0.13.x"
   },
   "peerDependencies": {
-    "react": "0.13.x || 0.14.x"
+    "react": "0.13.x || 0.14.x || ^15.0.0"
   },
   "jest": {
     "scriptPreprocessor": "test_utils/preprocessor.js",
