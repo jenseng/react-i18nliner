@@ -8,5 +8,9 @@
     "react": "0.13.x",
     "react-i18nliner": "../..",
     "webpack": "^1.9.8"
+  },
+  "scripts": {
+    "build": "./node_modules/.bin/webpack",
+    "extract": "./node_modules/.bin/i18nliner export"
   }
 }
