@@ -1,8 +1,8 @@
 module.exports = function(path) {
   jest.dontMock(path);
 
-  var React = require('react/addons');
-  var { addons: { TestUtils } } = React;
+  var React = require('react');
+  var TestUtils = require('react-addons-test-utils');
   var Component = require(path);
 
   return function(props, children) {

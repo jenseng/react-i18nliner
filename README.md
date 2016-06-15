@@ -1,5 +1,7 @@
 # react-i18nliner
 
+[<img src="https://travis-ci.org/jenseng/react-i18nliner.svg" />](http://travis-ci.org/jenseng/react-i18nliner)
+
 react-i18nliner brings [I18nliner](https://github.com/jenseng/i18nliner-js)
 to React via the [html `translate` attribute](http://www.w3.org/International/questions/qa-translate-flag). I18n doesn't get any easier than this.
 

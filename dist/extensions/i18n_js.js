@@ -1,6 +1,8 @@
+"use strict";
+
 var ComponentInterpolator = require("../ComponentInterpolator");
 
-var extend = function(I18n) {
+var extend = function extend(I18n) {
   I18n.ComponentInterpolator = ComponentInterpolator;
 };
 

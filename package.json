@@ -1,26 +1,32 @@
 {
   "name": "react-i18nliner",
-  "version": "0.0.13",
+  "version": "0.1.0",
   "description": "i18n made simple",
   "main": "main.js",
   "scripts": {
-    "test": "node_modules/.bin/jsxhint *.js */*.js && node_modules/.bin/jest",
-    "dist": "jsx --harmony --follow-requires . dist extensions/i18n_js"
+    "test": "node_modules/.bin/eslint . && node_modules/.bin/jest",
+    "dist": "babel -d dist ComponentInterpolator.js extensions/i18n_js.js"
   },
   "author": "Jon Jensen",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
-    "jest-cli": "^0.2.2",
-    "jsxhint": "^0.10.0",
-    "react": "0.13.x",
-    "react-tools": "0.13.x"
+    "babel-cli": "^6.10.1",
+    "babel-jest": "^12.1.0",
+    "babel-plugin-transform-react-jsx": "^6.8.0",
+    "babel-polyfill": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "eslint": "^2.12.0",
+    "eslint-plugin-react": "^5.1.1",
+    "jest-cli": "^12.1.1",
+    "react": "^15.0.0",
+    "react-addons-test-utils": "^15.1.0",
+    "react-dom": "^15.1.0"
   },
   "peerDependencies": {
     "react": "0.13.x || 0.14.x || ^15.0.0"
   },
   "jest": {
-    "scriptPreprocessor": "test_utils/preprocessor.js",
-    "setupTestFrameworkScriptFile": "test_utils/jasmine.js",
     "unmockedModulePathPatterns": [
       "node_modules",
       "test_utils"

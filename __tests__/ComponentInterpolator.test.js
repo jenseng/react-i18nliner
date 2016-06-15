@@ -1,9 +1,10 @@
 var subjector = require('../test_utils/subjector');
 var Subject = subjector(__dirname + '/../ComponentInterpolator');
 var React = require('react');
+var ReactDOM = require('react-dom');
 
 var removeNoise = function(string) {
-  return string.replace(/<span.*?>|<\/span>/g, '')
+  return string.replace(/<!--.*?-->/g, '')
                .replace(/ data-reactid=".*?"/g, '');
 };
 
@@ -14,7 +15,7 @@ describe('ComponentInterpolator', function() {
       wrappers: {}
     }, ["$1"]);
     expect(subject.isMounted()).toEqual(true);
-    expect(subject.getDOMNode().textContent).toEqual('Hello World');
+    expect(ReactDOM.findDOMNode(subject).textContent).toEqual('Hello World');
   });
 
   it('escapes html in the string', function() {
@@ -22,7 +23,7 @@ describe('ComponentInterpolator', function() {
       string: 'My favorite tag is <script />',
       wrappers: {}
     }, ["$1"]);
-    expect(subject.getDOMNode().textContent).toEqual('My favorite tag is <script />');
+    expect(ReactDOM.findDOMNode(subject).textContent).toEqual('My favorite tag is <script />');
   });
 
   it('interpolates wrapper components', function() {
@@ -34,7 +35,7 @@ describe('ComponentInterpolator', function() {
         '***': <b><em>$1</em></b>
       }
     }, [<hr />, "$1"]);
-    expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
+    expect(removeNoise(ReactDOM.findDOMNode(subject).innerHTML)).toEqual(
       '<hr>Ohai, Jane, click <a href="/"><img>here</a> right <b><em>now <i>please</i> </em></b>'
     );
   });
@@ -47,7 +48,7 @@ describe('ComponentInterpolator', function() {
       user_id: 0,
       count: <input />
     }, ["$1"]);
-    expect(removeNoise(subject.getDOMNode().innerHTML)).toEqual(
+    expect(removeNoise(ReactDOM.findDOMNode(subject).innerHTML)).toEqual(
       'Hi Jane (0), create <input> new accounts'
     );
   });

@@ -28,7 +28,7 @@ var injectNewDescendants = function(element, newDescendants, props, ensureInject
     newDescendants.injectedCount++;
   }
 
-  props.children = children;
+  props.children = children.length ? children : null;
   if (ensureInjected) {
     invariant(newDescendants.injectedCount === 1, 'wrappers must have a single "$1" text descendant');
   }

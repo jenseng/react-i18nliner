@@ -1,4 +1,3 @@
-var fs = require("fs");
 var preprocess = require("./preprocess");
 var recast = require("recast");
 
