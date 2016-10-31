@@ -295,6 +295,16 @@ return (this.props.isAuthorized ?
 **NOTE:** in a subsequent release of react-i18nliner, the former example
 will cause an `i18nliner:check` failure. You've been warned :)
 
+### Cloning this project under Windows
+
+This project's eslint settings force a check on the use of linefeed characters 
+that will fail when the project is cloned with the git 
+[core.autocrlf](https://git-scm.com/book/tr/v2/Customizing-Git-Git-Configuration) 
+setting set to `true`, which is the default on Windows. So make sure to change 
+that setting beforehand. The easiest way to do this is probably to `git init` a new
+repo for this project and change the setting, and only then add this repo as a
+remote and pull from it.
+
 ## Related Projects
 
 * [i18nliner (ruby)](https://github.com/jenseng/i18nliner)
