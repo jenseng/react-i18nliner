@@ -4,7 +4,7 @@
   "description": "i18n made simple",
   "main": "main.js",
   "scripts": {
-    "test": "node_modules/.bin/eslint . && node_modules/.bin/jest",
+    "test": "eslint . && jest",
     "dist": "babel -d dist ComponentInterpolator.js extensions/i18n_js.js"
   },
   "author": "Jon Jensen",
