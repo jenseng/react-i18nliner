@@ -1,5 +1,7 @@
-var I18nliner = require("i18nliner");
+var I18nliner = require("i18nliner").default;
 var config = I18nliner.config;
+var JsProcessor = require('i18nliner/dist/lib/processors/js_processor').default;
+var parse = JsProcessor.prototype.parse;
 var preprocess = require("./preprocess");
 var hasTranslatableText = require("./hasTranslatableText")(config);
 
@@ -27,6 +29,6 @@ module.exports = function(source) {
   this.cacheable();
   addNoParse.call(this);
   if (hasTranslatableText(source))
-    source = preprocess(source, config);
+    source = preprocess(parse(source), config);
   return source;
 };
