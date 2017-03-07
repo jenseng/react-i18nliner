@@ -1,5 +1,4 @@
 var preprocess = require("./preprocess");
-var recast = require("recast");
 
 module.exports = function(i18nliner) {
   var JsProcessor = i18nliner.processors.JsProcessor;
@@ -14,7 +13,7 @@ module.exports = function(i18nliner) {
     fileData.skip = fileData.skip && !hasTranslatableText(source);
 
     if (!fileData.skip) {
-      var ast = fileData.ast || recast.parse(source, config.recastOptions);
+      var ast = fileData.ast || this.parse(source);
       preprocess.ast(ast, config);
       fileData.ast = ast;
     }

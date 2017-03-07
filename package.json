@@ -18,12 +18,14 @@
     "babel-preset-react": "^6.5.0",
     "eslint": "^2.12.0",
     "eslint-plugin-react": "^5.1.1",
+    "i18nliner": "~0.2.1",
     "jest-cli": "^12.1.1",
     "react": "^15.0.0",
     "react-addons-test-utils": "^15.1.0",
     "react-dom": "^15.1.0"
   },
   "peerDependencies": {
+    "i18nliner": "~0.2.1",
     "react": "0.13.x || 0.14.x || ^15.0.0"
   },
   "jest": {
@@ -33,9 +35,8 @@
     ]
   },
   "dependencies": {
-    "i18nliner": "^0.1.5",
     "invariant": "2.2.1",
-    "recast": "^0.10.12",
+    "recast": "^0.11.12",
     "through2": "^0.6.3"
   }
 }
