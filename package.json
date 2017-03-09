@@ -1,6 +1,6 @@
 {
   "name": "react-i18nliner",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "i18n made simple",
   "main": "main.js",
   "scripts": {
