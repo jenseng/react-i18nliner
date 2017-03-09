@@ -1,5 +1,6 @@
 var recast = require('recast');
 var b = recast.types.builders;
+var parse = require('i18nliner/dist/lib/processors/js_processor').default.prototype.parse;
 
 // http://www.w3.org/TR/html5/dom.html#the-translate-attribute
 // everything per the spec, except:
@@ -364,8 +365,9 @@ function transformationsFor(config) {
   };
 }
 
-var preprocess = function(ast, config) {
+var preprocess = function(source, config) {
   config = config || {};
+  var ast = recast.parse(source, {parser: {parse: parse}});
   preprocessAst(ast, config);
   return recast.print(ast).code;
 };

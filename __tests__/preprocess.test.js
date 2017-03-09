@@ -1,11 +1,8 @@
 jest.autoMockOff();
 var preprocess = require('../preprocess');
-var JsProcessor = require('i18nliner/dist/lib/processors/js_processor').default;
 
 var subject = function() {
-  var args = [].slice.apply(arguments);
-  args[0] = JsProcessor.prototype.parse(args[0]);
-  return preprocess.apply(null, args)
+  return preprocess.apply(null, arguments)
            .replace(/\s+/g, ' ')
            .replace(/;$/, '');
 };
