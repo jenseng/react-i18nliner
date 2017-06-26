@@ -1,6 +1,6 @@
 var React = require('react');
 var invariant = require('invariant');
-var { string, object } = React.PropTypes;
+var { string, object } = require('prop-types');
 
 var WRAPPER_PATTERN = /(\*+)/;
 var PLACEHOLDER_PATTERN = /(%\{.*?\})/;
@@ -122,4 +122,3 @@ var ComponentInterpolator = React.createClass({
 });
 
 module.exports = ComponentInterpolator;
-

@@ -2,7 +2,7 @@ module.exports = function(path) {
   jest.dontMock(path);
 
   var React = require('react');
-  var TestUtils = require('react-addons-test-utils');
+  var TestUtils = require('react-dom/test-utils');
   var Component = require(path);
 
   return function(props, children) {
@@ -13,4 +13,3 @@ module.exports = function(path) {
     );
   };
 };
-
