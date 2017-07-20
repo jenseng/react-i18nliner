@@ -1,55 +1,49 @@
-var subjector = require('../test_utils/subjector');
-var Subject = subjector(__dirname + '/../ComponentInterpolator');
 var React = require('react');
-var ReactDOM = require('react-dom');
-
-var removeNoise = function(string) {
-  return string.replace(/<!--.*?-->/g, '')
-               .replace(/ data-reactid=".*?"/g, '');
-};
+var { shallow } = require('enzyme');
+var CI = require('../ComponentInterpolator');
 
 describe('ComponentInterpolator', function() {
   it('renders', function() {
-    var subject = Subject({
-      string: 'Hello World',
-      wrappers: {}
-    }, ["$1"]);
-    expect(subject.isMounted()).toEqual(true);
-    expect(ReactDOM.findDOMNode(subject).textContent).toEqual('Hello World');
+    var component = <CI string='Hello World'>$1</CI>;
+    expect(shallow(component).text()).toEqual('Hello World');
+  });
+
+  it('wraps content in a <span>', function() {
+    var component = <CI string='Howdy!'>$1</CI>;
+    expect(shallow(component).html()).toEqual('<span>Howdy!</span>');
   });
 
   it('escapes html in the string', function() {
-    var subject = Subject({
-      string: 'My favorite tag is <script />',
-      wrappers: {}
-    }, ["$1"]);
-    expect(ReactDOM.findDOMNode(subject).textContent).toEqual('My favorite tag is <script />');
+    var component = <CI string='My favorite tag is <script />'>$1</CI>;
+    expect(shallow(component).text()).toEqual('My favorite tag is <script />');
   });
 
   it('interpolates wrapper components', function() {
-    var subject = Subject({
+    var props = {
       string: 'Ohai, Jane, click *here* right ***now **please** ***',
       wrappers: {
         '*': <a href='/'><img />$1</a>,
         '**': <i>$1</i>,
         '***': <b><em>$1</em></b>
       }
-    }, [<hr />, "$1"]);
-    expect(removeNoise(ReactDOM.findDOMNode(subject).innerHTML)).toEqual(
-      '<hr>Ohai, Jane, click <a href="/"><img>here</a> right <b><em>now <i>please</i> </em></b>'
+    };
+    var component = <CI {...props}><hr />$1</CI>;
+    expect(shallow(component).html()).toEqual(
+      '<span><hr/>Ohai, Jane, click <a href="/"><img/>here</a> right <b><em>now <i>please</i> </em></b></span>'
     );
   });
 
   it('interpolates placeholder components', function() {
-    var subject = Subject({
+    var props = {
       string: 'Hi %{user} (%{user_id}), create %{count} new accounts',
       wrappers: {},
       user: "Jane",
       user_id: 0,
       count: <input />
-    }, ["$1"]);
-    expect(removeNoise(ReactDOM.findDOMNode(subject).innerHTML)).toEqual(
-      'Hi Jane (0), create <input> new accounts'
+  };
+    var component = <CI {...props}>$1</CI>;
+    expect(shallow(component).html()).toEqual(
+      '<span>Hi Jane (0), create <input/> new accounts</span>'
     );
   });
 });

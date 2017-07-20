@@ -192,6 +192,7 @@ rules:
   quotes: 'off'
   radix: error
   "react/jsx-uses-react": 1
+  "react/jsx-uses-vars": 1
   require-jsdoc: 'off'
   require-yield: error
   rest-spread-spacing: error

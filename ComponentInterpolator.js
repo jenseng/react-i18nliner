@@ -1,6 +1,6 @@
 var React = require('react');
 var invariant = require('invariant');
-var { string, object } = React.PropTypes;
+var { string, object } = require('prop-types');
 
 var WRAPPER_PATTERN = /(\*+)/;
 var PLACEHOLDER_PATTERN = /(%\{.*?\})/;
@@ -47,79 +47,85 @@ var getInjectIndex = function(children, containerName) {
   return index;
 };
 
-var ComponentInterpolator = React.createClass({
-  propTypes: {
-    string: string.isRequired,
-    wrappers: object
-  },
+var Counter = function() {
+  this.count = 0;
+  this.next = function() {
+    return this.count++;
+  };
+};
 
-  inferChildren() {
-    var tokens = (this.props.string || '').split(WRAPPER_PATTERN);
-    this.keyCounter = 0;
-    var inferredChildren = this.interpolateAllComponents(tokens);
+var inferChildren = function(props) {
+  var tokens = (props.string || '').split(WRAPPER_PATTERN);
+  var inferredChildren = interpolateAllComponents(tokens, props);
 
-    var currentChildren = toArray(this.props.children);
+  var currentChildren = toArray(props.children);
 
-    var index = getInjectIndex(currentChildren, '<ComponentInterpolator>');
-    invariant(index >= 0, '<ComponentInterpolator> must have a "$1" text child"');
-    currentChildren.splice.apply(currentChildren, [index, 1].concat(inferredChildren));
-    return currentChildren;
-  },
+  var index = getInjectIndex(currentChildren, '<ComponentInterpolator>');
+  invariant(index >= 0, '<ComponentInterpolator> must have a "$1" text child"');
+  currentChildren.splice.apply(currentChildren, [index, 1].concat(inferredChildren));
+  return currentChildren;
+};
 
-  interpolateAllComponents(tokens, eof) {
-    var token, child;
-    var children = [];
-    var wrappers = this.props.wrappers || {};
-    while (tokens.length) {
-      token = tokens.shift();
-      if (token === eof) break;
-      if (token.match(WRAPPER_PATTERN)) {
-        invariant(
-          child = wrappers[token],
-          `<ComponentInterpolator> expected '${token}' wrapper, none found`
-        );
-
-        child = injectNewDescendants(
-          child,
-          this.interpolateAllComponents(tokens, token),
-          { key: this.keyCounter++ },
-          true
-        );
-        children.push(child);
-      }
-      else {
-        children.push.apply(children, this.interpolatePlaceholders(token));
-      }
-    }
-    return children;
-  },
-
-  interpolatePlaceholders(string) {
-    var token, child;
-    var tokens = string.split(PLACEHOLDER_PATTERN);
-    var children = [];
-    while (tokens.length) {
-      token = tokens.shift();
-      if (token.match(PLACEHOLDER_PATTERN)) {
-        token = token.slice(2, -1);
-        invariant(
-          this.props.hasOwnProperty(token),
-          `<ComponentInterpolator> expected '${token}' placeholder value, none found`
-        );
-        child = this.props[token];
-        child = child && child.type ? React.cloneElement(child, {key: this.keyCounter++}) : child;
-        children.push(child);
-      } else {
-        children.push(token);
-      }
-    }
-    return children;
-  },
-
-  render() {
-    return React.createElement('span', {}, this.inferChildren());
+var interpolateAllComponents = function(tokens, props, keyCounter, eof) {
+  var token, child;
+  var children = [];
+  var wrappers = props.wrappers || {};
+  if (!keyCounter) {
+    keyCounter = new Counter();
   }
-});
+  while (tokens.length) {
+    token = tokens.shift();
+    if (token === eof) break;
+    if (token.match(WRAPPER_PATTERN)) {
+      invariant(
+        child = wrappers[token],
+        `<ComponentInterpolator> expected '${token}' wrapper, none found`
+      );
+
+      child = injectNewDescendants(
+        child,
+        interpolateAllComponents(tokens, props, keyCounter, token),
+        { key: keyCounter.next() },
+        true
+      );
+      children.push(child);
+    }
+    else {
+      children.push.apply(children, interpolatePlaceholders(token, props, keyCounter));
+    }
+  }
+  return children;
+};
+
+var interpolatePlaceholders = function(string, props, keyCounter) {
+  var token, child;
+  var tokens = string.split(PLACEHOLDER_PATTERN);
+  var children = [];
+  while (tokens.length) {
+    token = tokens.shift();
+    if (token.match(PLACEHOLDER_PATTERN)) {
+      token = token.slice(2, -1);
+      invariant(
+        props.hasOwnProperty(token),
+        `<ComponentInterpolator> expected '${token}' placeholder value, none found`
+      );
+      child = props[token];
+      child = child && child.type ? React.cloneElement(child, {key: keyCounter.next()}) : child;
+      children.push(child);
+    } else {
+      children.push(token);
+    }
+  }
+  return children;
+};
+
+var ComponentInterpolator = function(props) {
+  return React.createElement('span', {}, inferChildren(props));
+};
+
+ComponentInterpolator.propTypes = {
+  string: string.isRequired,
+  wrappers: object
+};
 
 module.exports = ComponentInterpolator;
-
